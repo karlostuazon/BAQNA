@@ -1,0 +1,1 @@
+web: gunicorn vaccine_tracker.wsgi --log-file -
