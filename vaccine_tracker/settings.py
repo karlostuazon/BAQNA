@@ -135,7 +135,7 @@ MEDIA_URL = '/images/'
 
 #STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'vaccine_tracker/static/tracker/images')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'vaccine_tracker/static/tracker/images')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
