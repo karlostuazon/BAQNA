@@ -15,7 +15,7 @@ from django.db.models import F
 from .filters import *
 import datetime
 from xhtml2pdf import pisa
-from easy_pdf.views import PDFTemplateResponseMixin
+from easy_pdf.views import PDFTemplateResponseMixin, PDFTemplateView
 from django.views.generic.detail import DetailView
 
 
@@ -94,8 +94,6 @@ def createRecord(request):
     latest = Patient.objects.latest('id')
     latest_id = getattr(latest, 'id')
 
-    
-    
     if(request.method == "POST"):
         patient_form = CreateRecordFormPatient(request.POST)
         if patient_form.is_valid():
@@ -104,26 +102,28 @@ def createRecord(request):
 
             patient_form.save()
 
-            messages.success(request, 'Account was created for ' + pfname + plname)
+            messages.success(request, 'Account was created for {} {}.'.format(pfname, plname))
+        else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
         return redirect('/home')
-        # else:
-            # messages.error(request, "Unsuccessful registration. Invalid information.")
-
 
     context = {'patient_form':patient_form,
                 'latest_id': latest_id,
     }
     return render(request, "patientmonitoring/createRecord.html", context)
-
+    
 @login_required(login_url='login')
 def patient(request, pk):
     patient = Patient.objects.get(id=pk)
-    bday = getattr(patient, 'birthdate')
+
+    # -- Age (X Years Y Months) --
     curr_date = datetime.date.today()
-    months = curr_date.month - bday.month 
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
     
     data = {
-        'patient': patient, 'months': months,
+        'patient': patient, 'age': age,
     }
     return render(request, 'patientmonitoring/patient.html', data)
 
@@ -131,6 +131,12 @@ def patient(request, pk):
 def editPatient(request, pk):
     patient = Patient.objects.get(id=pk)
     patient_form = CreateRecordFormPatient(instance=patient)
+
+    # -- Age (X Years Y Months) --
+    curr_date = datetime.date.today()
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
 
     if(request.method == "POST"):
         patient_form = CreateRecordFormPatient(request.POST, instance=patient)
@@ -144,7 +150,9 @@ def editPatient(request, pk):
             return redirect('/patient/' + pk)
 
     data = {
-        'patient': patient, 'patient_form': patient_form
+        'patient': patient, 
+        'patient_form': patient_form,
+        'age': age,
     }
 
     return render(request, 'patientmonitoring/editPatient.html', data)
@@ -156,19 +164,26 @@ def appointment(request, pk):
 
     appointments = Appointment.objects.all()
 
+    # -- Age (X Years Y Months) --
+    curr_date = datetime.date.today()
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
+
     if(request.method == "POST"):
         appointment_form = AppointmentForm(request.POST)
         if appointment_form.is_valid():
             appointment_form.save()
             messages.success(request, 'Appointment scheduled!')
         else:
-            messages.error(request, 'Appointment scheduling failed!')
+            messages.error(request, 'Failed to schedule appointment.')
         return redirect('/appointment/' + pk)
 
     data = {
         'patient': patient,
         'appointment_form': appointment_form,
         'appointments': appointments,
+        'age': age,
     }
 
     return render(request, 'patientmonitoring/appointment.html', data)
@@ -176,36 +191,49 @@ def appointment(request, pk):
 
 @login_required(login_url='login')
 def portal(request, pk):
-
     patient = Patient.objects.get(id=pk)
     portal_form = PortalForm()
-    bday = getattr(patient, 'birthdate')
+    patient_form = PatientUserForm()
+    
+    # -- Age (X Years Y Months) --
     curr_date = datetime.date.today()
-    months = curr_date.month - bday.month 
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
 
     if request.method == 'POST':
-        form = PortalForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        portal_form = PortalForm(request.POST)
+        patient_form = PatientUserForm(request.POST)
+        if portal_form.is_valid() and patient_form.is_valid():
+            user = portal_form.save()
+            profile = patient_form.save(commit=False)
+            profile.user = user
+            profile.patient = patient
+            profile.save()
             messages.success(request, 'Account Created!')
         else:
-            messages.error(request, 'Failed to create account')
+            messages.error(request, 'Failed to create account.')
         return redirect('/portal/' + pk)
     
     data = {
         'patient': patient, 
-        'months': months,
+        'age': age,
         'portal_form': portal_form,
+        'patient_form': patient_form,
     }
     return render(request, 'patientmonitoring/portal.html', data)
 
 @login_required(login_url='login')
 def certificate(request, pk):
     patient = Patient.objects.get(id=pk)
-    bday = getattr(patient, 'birthdate')
+    
     cert_date = None
+
+    # -- Age (x Years y Months) -- 
     curr_date = datetime.date.today()
-    months = curr_date.month - bday.month 
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
 
     if(request.method == "POST"):
         cert_date = request.POST['sign_cert']
@@ -218,14 +246,65 @@ def certificate(request, pk):
 
     data = {
         'patient': patient, 
-        'months': months,
+        'age': age,
         'curr_date': curr_date,
     }
     return render(request, 'patientmonitoring/certificate.html', data)
 
 class PdfDetail(PDFTemplateResponseMixin, DetailView):
-    template_name = 'patientmonitoring/pdf_cert.html'
-    context_object_name = 'patient'
     model = Patient
+    template_name = 'patientmonitoring/pdf_cert.html'
+    download_filename = 'Vaccine Certificate of {}-{}'.format(model.last_name, model.first_name)
+    context_object_name = 'patient'
+
+    # curr_date = datetime.date.today()
+    # months = curr_date.month - model.birthdate.month
+    # years = curr_date.year - model.birthdate.year
+    # age = "{} year {} month".format(years, months)
+
+@login_required(login_url='login')
+def vaccine(request, pk):
+    patient = Patient.objects.get(id=pk)
+    #vaccines = PatientVaccine.objects.all()
+
+    # -- Age (X Years Y Months) --
     curr_date = datetime.date.today()
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
+    
+    data = {
+        'patient': patient, 
+        #'vaccines': vaccines,
+        'age': age,
+    }
+    return render(request, 'patientmonitoring/vaccine.html', data)
+
+@login_required(login_url='login')
+def editVaccine(request, pk):
+    patient = Patient.objects.get(id=pk)
+    # vaccine_form = PatientVaccineForm(initial={'patient': patient})
+    # vaccines = PatientVaccine.objects.all()
+    vaccine_form = PatientVaccineForm(instance=patient)
+
+    # -- Age (X Years Y Months) --
+    curr_date = datetime.date.today()
+    months = curr_date.month - patient.birthdate.month
+    years = curr_date.year - patient.birthdate.year
+    age = "{} year {} month".format(years, months)
+
+    if(request.method == "POST"):
+        vaccine_form = PatientVaccineForm(request.POST, instance=patient)
+        if vaccine_form.is_valid():
+            vaccine_form.save()
+       
+        return redirect('/vaccine/' + pk)
+    
+    data = {
+        'patient': patient, 
+        'vaccine_form': vaccine_form,
+        #'vaccines': vaccines,
+        'age': age,
+    }
+    return render(request, 'patientmonitoring/editVaccine.html', data)
 

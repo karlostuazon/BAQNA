@@ -19,5 +19,7 @@ urlpatterns = [
     path('portal/<str:pk>', views.portal, name = 'portal'), 
     path('certificate/<str:pk>', views.certificate, name='certificate'),
     path('generatepdf/<str:pk>', views.PdfDetail.as_view(), name="generatepdf"),
+    path('vaccine/<str:pk>', views.vaccine, name="vaccine"),
+    path('editVaccine/<str:pk>', views.editVaccine, name="editVaccine"),
 
 ]
