@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'easy_pdf',
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
@@ -115,13 +117,21 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Singapore'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
+
+DATE_FORMAT = 'm/d/Y'
+
+TIME_FORMAT = 'h:i A'
+
+DATE_INPUT_FORMAT = ('%m/%d/%Y', '%m/%d/%y') 
+
+DATETIME_INPUT_FORMAT = 'm/d/Y'
 
 
 # Static files (CSS, JavaScript, Images)
@@ -142,10 +152,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'vaccine_tracker/static/tracker/images')
 
 #DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# MAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'patientmonitor127@gmail.com'
+# EMAIL_HOST_PASSWORD = 'cmsc127mp'
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+
+#email stuff
+LOGIN_REDIRECT_URL = 'index'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'patientmonitor127@gmail.com'
-EMAIL_HOST_PASSWORD = 'cmsc127mp'
 EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'planter121@gmail.com'
+EMAIL_HOST_PASSWORD = 'planterroot'

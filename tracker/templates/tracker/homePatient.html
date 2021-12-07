@@ -1,0 +1,39 @@
+{% include 'tracker/info_header_patient.html' %}
+{% block content %}
+<style>
+
+</style>
+
+<div class="container-fluid" style="padding:1%;">
+  <div class="row">
+      <div class="col-lg-2" style="background-color: rgb(255, 255, 255); display: flex; justify-content: center; margin-top: 5%;">
+        <div class="btn-group-vertical" style="display: block;">
+          <a class="btn btn-outline-primary" href="{% url 'patient' patientUser.patient.id %}">Profile</a>
+          <a class="btn btn-outline-primary" href="{% url 'appointment' patientUser.patient.id %}">Appointment</a>
+          <a class="btn btn-outline-primary" href="{% url 'vaccine' patientUser.patient.id %}">Vaccine</a>
+          <a class="btn btn-outline-primary" href="{% url 'certificate' patientUser.patient.id %}">Certificate</a>
+        </div>
+      </div>
+
+      <div class="col-lg-10" style="background-color: rgb(255, 255, 255)">
+        <div class="reminder-div" style="margin-top: 5%;">
+          <h2>
+            Hi {{patientUser.patient.first_name}}!
+          </h2>
+          <br>
+          <h4>
+            Welcome to the BAQNA Patient Portal.<br><br>
+            You may check your profile details, appointment, vaccines, and certificate using this portal.<br>
+            You may also request for an appointment with your assigned doctor.<br><br>
+
+            Enjoy!
+
+          </h4>
+        </div>
+      </div>
+  </div>
+</div>
+
+
+
+{% endblock content %}

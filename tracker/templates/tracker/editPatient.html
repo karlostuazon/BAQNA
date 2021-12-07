@@ -1,0 +1,304 @@
+{% include 'tracker/info_header.html' %}
+{% block content %}
+{% load auth_extras %}
+<style>
+
+</style>
+
+<div class="container-fluid" style="margin-top: 1%; padding:1%;">
+  <div class="row">
+      <div class="col-lg-2" style="background-color: white; display: flex; justify-content: center; margin-top: 4%;">
+        <div class="btn-group-vertical" style="display: block;">
+          <a class="btn btn-outline-primary" href="#">Profile</a>
+          <a class="btn btn-outline-primary" href="{% url 'appointment' patient.id %}">Appointment</a>
+          <a class="btn btn-outline-primary">Vaccine</a>
+          {% if request.user|has_group:"Doctor" or request.user|has_group:"Admin" %}
+          <a class="btn btn-outline-primary">Portal</a>
+          {% endif %}
+          <a class="btn btn-outline-primary">Certificate</a>
+        </div>
+      </div>
+
+      <div class="col-lg-10" style="background-color: white">
+        <div id="recordFormDiv">
+          <form class="create-record-form" action="" method= "POST">
+            {% csrf_token %}
+            <table class="table table-bordered table-sm">
+                <tbody>
+                  <tr>
+                    <td class="table-warning" style="text-align: left;"><b>Name</b></td>
+                    <td class="table-warning">Nickname</td>
+                    <td>{{patient_form.nick_name}}</td>
+                    <td class="table-warning" colspan="2">Attending Doctor</td>
+
+                    {% if request.user|has_group:"Doctor" or request.user|has_group:"Admin" %}
+                    <td colspan="2">{{patient_form.attending_doctor}}</td>
+                    {% else %}
+                    <td colspan="2">{{patient.attending_doctor}}</td>
+                    {% endif %}
+
+                    <td class="table-warning">Record #</td>
+                    <td class="table-warning" id="record_no" style="text-align: left;">{{patient.id}}</td>
+                  </tr>
+                  <tr>
+                    <td class="table-warning">First</td>
+                    <td colspan="2">{{patient_form.first_name}}</td>
+                    <td class="table-warning" >Last</td>
+                    <td>{{patient_form.last_name}}</td>
+                    <td class="table-warning">Middle</td>
+                    <td>{{patient_form.middle_name}}</td>
+                    <td class="table-warning">Suffix</td>
+                    <td>{{patient_form.suffix}}</td>
+                  </tr>
+                  <tr>
+                    <td class="table-warning">Sex</td>
+                    <td colspan="2">{{patient_form.sex}}</td>
+                    <td class="table-warning" colspan="2">Date of Birth</td>
+                    <td colspan="2" onchange="format()">{{patient_form.birthdate}}</td>
+                    <td class="table-warning">Age</td>
+                    <td id="age">{{age}}</td>
+                  </tr>
+                  <tr>
+                    <td class="table-warning" style="text-align: left;"><b>Contact #</b></td>
+                    <td class="table-warning">Mobile</td>
+                    <td colspan="2">{{patient_form.cell_no}}</td>
+                    <td class="table-warning" colspan="2">Landline</td>
+                    <td>{{patient_form.landline}}</td>
+                    <td class="table-warning">Email</td>
+                    <td colspan="2">{{patient_form.email}}</td>
+                  </tr>
+                  <tr>
+                    <td class="table-warning" style="text-align: left;"><b>Address</b></td>
+                    <td class="table-warning" colspan="3">House/Unit No/LtBlk/Street</td>
+                    <td colspan="2">{{patient_form.house_no}}</td>
+                    <td class="table-warning">Barangay</td>
+                    <td colspan="2">{{patient_form.barangay}}</td>
+                  </tr>
+                  <tr>
+                    <td class="table-warning" colspan="2">City</td>
+                    <td colspan="2">{{patient_form.city}}</td>
+                    <td class="table-warning" colspan="2">Region</td>
+                    <td>{{patient_form.region}}</td>
+                    <td class="table-warning">Zip Code</td>
+                    <td>{{patient_form.zip}}</td>
+                  </tr>
+                  <tr>
+                      <td class="table-warning" style="text-align: left;" colspan="9"><b>Parent's Information</b></td>
+                  </tr>
+                  <tr>
+                      <td class="table-warning">Mother</td>
+                      <td class="table-warning">First Name</td>
+                      <td>{{patient_form.mfname}}</td>
+                      <td class="table-warning">Last Name</td>
+                      <td>{{patient_form.mlname}}</td>
+                      <td class="table-warning">Contact #</td>
+                      <td>{{patient_form.mcontact}}</td>
+                      <td class="table-warning">Email</td>
+                      <td>{{patient_form.memail}}</td>
+                  </tr>
+                  <tr>
+                    <td class="table-warning">Father</td>
+                    <td class="table-warning">First Name</td>
+                    <td>{{patient_form.ffname}}</td>
+                    <td class="table-warning">Last Name</td>
+                    <td>{{patient_form.flname}}</td>
+                    <td class="table-warning">Contact #</td>
+                    <td>{{patient_form.fcontact}}</td>
+                    <td class="table-warning">Email</td>
+                    <td>{{patient_form.femail}}</td>
+                </tr>
+                <tr>
+                    <td class="table-warning" style="text-align: left;"><b>Emergency Contact</b></td>
+                    <td class="table-warning" colspan="2">
+                      <input type="checkbox" name="flexRadioDefault" id="contact" onclick="check(this)">
+                      <label for="contact">Same as parent's information</label>
+                    </td>
+                    <td class="table-warning" colspan="6"></td>
+                </tr>
+                <tr>
+                    <td class="table-warning">Name</td>
+                    <td colspan="4">{{patient_form.c1full_name}}</td>
+                    <td class="table-warning">Relation</td>
+                    <td>{{patient_form.relation1}}</td>
+                    <td class="table-warning">Contact #</td>
+                    <td>{{patient_form.c1contact}}</td>
+                </tr>
+                <tr>
+                    <td class="table-warning">Name</td>
+                    <td colspan="4">{{patient_form.c2full_name}}</td>
+                    <td class="table-warning">Relation</td>
+                    <td>{{patient_form.relation2}}</td>
+                    <td class="table-warning">Contact #</td>
+                    <td>{{patient_form.c2contact}}</td>
+                </tr>
+                </tbody>
+              </table>
+        
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-danger" href="{% url 'patient' patient.id %}">Cancel</a>
+            <!-- <span class="fw-lighter" style="color: red;">*Required fields</span> -->
+        </form>
+        </div>
+      </div>
+
+<script>
+   // --Age format--
+   function format(){
+    //collect input from HTML form and convert into date format
+    var userinput = document.getElementById("dob").value;
+    var dob = new Date(userinput);
+    
+    //extract the year, month, and date from user date input
+    var dobYear = dob.getYear();
+    var dobMonth = dob.getMonth();
+    var dobDate = dob.getDate();
+    
+    //get the current date from the system
+    var now = new Date();
+    //extract the year, month, and date from current date
+    var currentYear = now.getYear();
+    var currentMonth = now.getMonth();
+    var currentDate = now.getDate();
+	
+    //declare a variable to collect the age in year, month, and days
+    var age = {};
+    var ageString = "";
+  
+    //get years
+    yearAge = currentYear - dobYear;
+	
+    //get months
+    if (currentMonth >= dobMonth)
+      //get months when current month is greater
+      var monthAge = currentMonth - dobMonth;
+    else {
+      yearAge--;
+      var monthAge = 12 + currentMonth - dobMonth;
+    }
+
+    //get weeks
+    var time_difference = now.getTime() - dob.getTime();  
+    var days_difference = time_difference / (1000 * 60 * 60 * 24);
+
+    //get days
+    if (currentDate >= dobDate)
+      //get days when the current date is greater
+      var dateAge = currentDate - dobDate;
+    else {
+      monthAge--;
+      var dateAge = 31 + currentDate - dobDate;
+
+      if (monthAge < 0) {
+        monthAge = 11;
+        yearAge--;
+      }
+    }
+    //group the age in a single variable
+    age = {
+    years: yearAge,
+    months: monthAge,
+    months1: Math.floor(days_difference/30.5),
+    weeks: Math.floor(days_difference/7),
+    days: dateAge
+    };
+    
+
+    if(!isNaN(yearAge) && !isNaN(monthAge)){  
+      if ( (age.years > 0) && (age.months > 0) && (age.days > 0) ){
+        if(age.months1 <= 18){
+          ageString = age.months1 + " month/s"
+        }
+        else if(age.years >= 18){
+          ageString = age.years + " year/s"
+        }
+        else
+          ageString = age.years + " year/s " + age.months + " month/s";
+      }
+
+      // same date, 1 y.o. <
+      else if ( (age.years > 0) && (age.months > 0) && (age.days == 0) )
+        ageString = age.years + " year/s " + age.months + " month/s";
+        
+      // 8 wks
+      else if ( (age.years == 0) && (age.months == 0) && (age.days > 0) ){
+        if(age.days < 7)
+          ageString = age.days + " day/s"
+        else
+          ageString = age.weeks + " week/s";
+      }
+      
+      // same month
+      else if ( (age.years > 0) && (age.months == 0) && (age.days > 0)){
+        if(age.months1 <= 18){
+          ageString = age.months1 + " month/s"
+        }
+        else if(age.years >= 18){
+          ageString = age.years + " year/s"
+        }
+        else
+          ageString = age.years + " year/s " + age.months + " month/s";
+      }
+      
+      // birthday
+      else if ( (age.years > 0) && (age.months == 0) && (age.days == 0) )  
+        ageString = age.years +  " year/s. Birthday today"; 
+
+      // before 1 y.o
+      else if ( (age.years == 0) && (age.months > 0) && (age.days > 0) ){
+        if(age.weeks <= 8){
+          ageString = age.weeks + " week/s"
+        }
+        else
+          ageString = age.months + " month/s"
+      }
+      
+      // years and days
+      else if ( (age.years > 0) && (age.months == 0) && (age.days > 0) )
+        ageString = age.years + " year/s";
+      
+      // before 1 y.o., same date, diff month
+      else if ( (age.years == 0) && (age.months > 0) && (age.days == 0) )
+        ageString = age.months + " month/s";
+
+    }
+    else ageString = " "; 
+
+    //display the calculated age
+    return document.getElementById("age").innerHTML = ageString ; 
+             
+  }
+
+  // --Check box for Emergency Contact--
+  function check(cb){
+      var mlname = document.getElementById("mlname").value;
+      var mfname = document.getElementById("mfname").value;
+      var mcontact = document.getElementById("mcontact").value;
+
+      var flname = document.getElementById("flname").value;
+      var ffname = document.getElementById("ffname").value;
+      var fcontact = document.getElementById("fcontact").value;
+
+    if(cb.checked && mlname != "" && mfname != "" && mcontact != "" &&
+       flname != "" && ffname != "" && fcontact != ""){
+          document.getElementById("c1full_name").value = mfname + " "+ mlname;
+          document.getElementById("relation1").value = "Mother";
+          document.getElementById("c1contact").value = mcontact;
+
+          document.getElementById("c2full_name").value = ffname + " " + flname;
+          document.getElementById("relation2").value = "Father";
+          document.getElementById("c2contact").value = fcontact;
+    }
+    else{
+          document.getElementById("c1full_name").value = "";
+          document.getElementById("relation1").value = "";
+          document.getElementById("c1contact").value = "";
+
+          document.getElementById("c2full_name").value = "";
+          document.getElementById("relation2").value = "";
+          document.getElementById("c2contact").value = "";
+    }
+  }
+  
+</script>
+
+{% endblock content %}

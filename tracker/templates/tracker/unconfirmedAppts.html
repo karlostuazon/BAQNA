@@ -1,0 +1,183 @@
+{% extends 'tracker/main.html' %}
+{% block content %}
+{% load auth_extras %}
+<style>
+  .form-control{
+    margin-bottom: 10px;
+  }
+</style>
+
+<nav class="navbar navbar-expand-xl" style="background-color: rgb(214, 214, 214);">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse me-auto" id="navbarTogglerDemo02">
+      <div style="margin-right: auto; margin-top: 10px;">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 navbar-custom">
+          <li class="nav-item" style="margin-right: 5px">
+              <h4>Unconfirmed Booked Appointments</h4>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid" style="padding:1%; ">
+    <div class="row">
+        <div class="col-lg-2" style="background-color: rgb(255, 255, 255);display: flex; justify-content: center; align-items: center; padding-top: 8%; padding-bottom: 8%;">
+            <div class="btn-group-vertical" style="display: block;">
+              <a class="btn btn-outline-primary" href="{% url 'report' %}">Report</a>
+              <div class="btn-group dropend">
+                <a class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Reminder
+                </a>
+                <ul class="dropdown-menu">
+                    <a class="btn btn-outline-primary" href="{% url 'dueVax' %}">Due Vaccine w/o Appts</a>
+                    <a class="btn btn-outline-primary" href="{% url 'unconfirmedAppts' %}">Unconfirmed Appts</a>
+                </ul>
+              </div>
+              {% if request.user.physician.can_reg == "Yes" or request.user|has_group:"Admin" %}
+              <div class="btn-group dropend">
+                <a class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Staff
+                </a>
+                <ul class="dropdown-menu">
+                    <a class="btn btn-outline-primary" href="{% url 'staffUpdate' %}">Update</a>
+                    <a class="btn btn-outline-primary" href="{% url 'staffCreate' %}">Create</a>
+                </ul>
+              </div>
+              {% endif %}
+            </div>
+        </div>
+
+
+
+        <div class="col-lg" style="background-color: white; padding-top: 3%;">
+          
+        <!-- Success/Error Message Popup -->
+        {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'success' %}
+            <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle"></i>
+              <div class="message">
+                &nbsp;{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            </div>
+          {% elif message.tags == 'error' %}
+            <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
+              <i class="fas fa-times-circle"></i>
+              <div class="message">
+                &nbsp;{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            </div>  
+          {% endif %}
+          {% endfor %}  
+          {% endif %}
+
+
+
+          <form method="post" style="width: 20%;">
+            {% csrf_token %}
+            <label for="datetimepicker1">Date start</label>
+            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+              {{unconfirmed_form.date_start}}
+              <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
+              </div>
+            </div>
+            <label for="datetimepicker2">Date end</label>
+            <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+              {{unconfirmed_form.date_end}}
+              <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
+              </div>
+            </div>
+            <button type="submit" style="width: 50%;" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+          </form>
+          {% if unconfirmed_form.data %}
+          <table id="rows" class="table table-primary table-bordered table-hover border-dark" style="margin-top: 3%;">
+            <thead>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Visit</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Doctor</th>
+              <th>Contact</th>
+            </thead>
+            {% for instance in appointments %}
+            {% if instance.patient.attending_doctor == request.user.physician or request.user|has_group:"Admin" %}
+            {% if instance.status != "Confirmed" and instance.status != "Cancelled" %}
+            <tbody>
+              <tr onclick="window.location='{% url 'unconfirmedApptsEmail' instance.id %}'">
+                <td>{{instance.date}}</td>
+                <td>{{instance.time}}</td>
+                <td>{{instance.visit}}</td>
+                <td>{{instance.patient.first_name}}</td>
+                <td>{{instance.patient.last_name}}</td>
+                <td>{{instance.doctor}}</td>
+                <td>{{instance.patient.cell_no}}</td>
+              </tr>
+            </tbody>
+            {% endif %}
+            {% endif %}
+            {% empty %}
+            <tr><td colspan="7" style="color: red;"><h6>No records found.</h6></td></tr>
+            {% endfor %}
+          </table>
+          {% endif %}
+        </div>
+
+        <!--MODAL FOR EMAIL PATIENT-->
+        <div class="modal fade" id="email" tabindex="-1" aria-labelledby="Email" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Schedule an appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              
+              <div class="modal-body">
+                asdasd
+              </div>
+              
+              <div class="modal-body">
+                asdasd
+              </div>
+             
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Schedule</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+  $(function(){
+      $('#email').modal({
+          keyboard: true,
+          backdrop: "static",
+          show:false,
+        }).on('show', function(){
+                var getIdFromRow = $(this).data('orderid');
+            });
+  });
+  $(function () {
+    $("#datetimepicker1").datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  }); 
+  $(function () {
+    $("#datetimepicker2").datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  }); 
+</script>
+{% endblock content %}

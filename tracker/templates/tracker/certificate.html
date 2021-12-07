@@ -1,0 +1,79 @@
+{% include 'tracker/info_header.html' %}
+{% block content %}
+{% load auth_extras %}
+<style>
+</style>
+
+<div class="container-fluid" style="padding:1%; ">
+    <div class="row">
+        {% for message in messages %}
+        <h2 id='messages' style="color: green; text-align: center;"> {{ message }}  </h2>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col-lg-2" style="background-color: rgb(255, 255, 255); display: flex; justify-content: center; margin-top: 5%;">
+            <div class="btn-group-vertical" style="display: block;">
+              <a class="btn btn-outline-primary" href="{% url 'patient' patient.id %}">Profile</a>
+              <a class="btn btn-outline-primary" href="{% url 'appointment' patient.id %}">Appointment</a>
+              <a class="btn btn-outline-primary" href="{% url 'vaccine' patient.id %}">Vaccine</a>
+              {% if request.user|has_group:"Doctor" or request.user|has_group:"Admin" %}
+              <a class="btn btn-outline-primary" href="{% url 'portal' patient.id %}">Portal</a>
+              {% endif %}
+              <a class="btn btn-outline-primary active" href="#">Certificate</a>
+            </div>
+        </div>
+
+        <div class="col-lg-10" style="background-color: white; padding-top: 8%; padding-bottom: 8%;">
+            {% if request.user|has_group:"Doctor" or request.user|has_group:"Admin" %}
+
+
+            {% if patient.cert_date is None %}
+            <h4>Date: No Vaccine Certificate Yet</h4>
+            {% else %}
+            <h4>Date: <b>{{patient.cert_date}}</b></h4>
+            {% endif %}
+
+            <div class="certificate-text">
+                <p style="border-style: solid; padding: 1%; padding-bottom: 5%; font-size: 18px; color: black; width: max-content   ;">
+                    This is to certify that <b>{{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</b>,
+                    <b>{{age}}, {{patient.sex}}</b>, of <b>{{patient.city}}</b> has completed the following 
+                    vaccinations. <br><br> This certificate is being issued upon the request of the above-mentioned for
+                    whatever purpose it may serve, except those of a medico-legal-nature.<br><br>
+
+                    {{patient.attending_doctor}}
+                </p> 
+                <a style="display:inline;" 
+                  class="btn btn-primary" 
+                  href="{% url 'generatepdf' patient.id %}" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  >
+                  View/Print
+                </a>
+            </div>
+
+            {% else %}
+
+            <div class="certificate-text">
+                <p style="border-style: solid; padding: 1%; padding-bottom: 5%; padding-right: 20%; font-size: 18px; color: black; width: max-content ;">
+                    Click view button to view vaccine certificate. <br><br>
+                    NOTE: This is not an official document. Please consult with your physicican for a signed copy.  
+                </p>
+                <a style="display:inline;" 
+                  class="btn btn-primary" 
+                  href="{% url 'generatepdfpatient' patient.id %}" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  >
+                  View/Print
+                </a>
+
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+{% endblock content %}

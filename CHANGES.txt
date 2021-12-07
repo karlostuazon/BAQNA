@@ -1,0 +1,4 @@
+- Restriction sa appointment na ung doctor na logged in, ung appointments lang nya makikita nya
+- email reminder for unconfirmed na booked na appointments
+- pinadagdag sa editvaccine
+- pinadgdag sa vaccine 

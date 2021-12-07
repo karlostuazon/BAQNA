@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,23 +8,28 @@ from django.forms.fields import ChoiceField
 from django.urls import reverse
 from django.core.validators import *
 from phonenumber_field.modelfields import PhoneNumberField
-
+from django.utils import timezone
 
 # Create your models here.
 class Physician(models.Model):
-    # user = models.OneToOneField(User, limit_choices_to={'groups__name':u'Physician'}, null=True, on_delete=models.CASCADE)
+    CAN_REG = (
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    )
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    prefix = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True)
     first_name = models.CharField(max_length=100, null=True)
-    age = models.IntegerField(null=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
+    date_start = models.DateField(null=True, blank=True)
+    date_end = models.DateField(null=True, blank=True)
     cell_no = PhoneNumberField(null=True, blank=True)
-    specialization = models.CharField(max_length=100, null=True)
-    email = models.EmailField(max_length=100, null=True)
+    doc_type = models.CharField(max_length=100, null=True)
+    can_reg = models.CharField(max_length=100, null=True, blank=True, choices=CAN_REG)
 
     def __str__(self):
-        return self.last_name + ", " + self.first_name + ' - ' + self.specialization
-    
-    def get_absolute_url(self):
-        return reverse('updatePhysician', args=[str(self.pk)])
+        return self.doc_type + " " + self.last_name
+
 
 
 class Patient(models.Model):
@@ -31,18 +37,10 @@ class Patient(models.Model):
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    LOC = (
-        ('R Thigh', 'R Thigh'),
-        ('L Thigh', 'L Thigh'),
-        ('R Arm', 'R Arm'),
-        ('L Arm', 'L Arm'),
-        ('R Buttocks', 'R Buttocks'),
-        ('L Buttocks', 'L Buttocks')
-    )
     last_name = models.CharField(max_length=100, null=True)
     first_name = models.CharField(max_length=100, null=True)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
-    suffix = models.CharField(max_length=100, null=True, blank=True)
+    suffix = models.CharField(max_length=2, null=True, blank=True)
     nick_name = models.CharField(max_length=100, null=True, blank=True)
     sex = models.CharField(max_length=1, null=True, choices=SEX)
     birthdate = models.DateField(null=True)
@@ -83,190 +81,6 @@ class Patient(models.Model):
     relation2 = models.CharField(max_length=100, null=True, blank=True)
     c2contact = PhoneNumberField(null=True, blank=True)
 
-    # Vaccine Brands
-    bcg_brand = models.CharField(max_length=100, null=True, blank=True)
-    hepb1_brand = models.CharField(max_length=100, null=True, blank=True)
-    hepb2_brand = models.CharField(max_length=100, null=True, blank=True)
-    dt1_brand = models.CharField(max_length=100, null=True, blank=True)
-    ip1_brand = models.CharField(max_length=100, null=True, blank=True)
-    hi1_brand = models.CharField(max_length=100, null=True, blank=True)
-    pcv1_brand = models.CharField(max_length=100, null=True, blank=True)
-    rota1_brand = models.CharField(max_length=100, null=True, blank=True)
-    dt2_brand = models.CharField(max_length=100, null=True, blank=True)
-    ip2_brand = models.CharField(max_length=100, null=True, blank=True)
-    hi2_brand = models.CharField(max_length=100, null=True, blank=True)
-    pcv2_brand = models.CharField(max_length=100, null=True, blank=True)
-    rota2_brand = models.CharField(max_length=100, null=True, blank=True)
-    hepb3_brand = models.CharField(max_length=100, null=True, blank=True)
-    dt3_brand = models.CharField(max_length=100, null=True, blank=True)
-    ip3_brand = models.CharField(max_length=100, null=True, blank=True)
-    hi3_brand = models.CharField(max_length=100, null=True, blank=True)
-    pcv3_brand = models.CharField(max_length=100, null=True, blank=True)
-    rota3_brand = models.CharField(max_length=100, null=True, blank=True)
-    influ1of2_brand = models.CharField(max_length=100, null=True, blank=True)
-    measles_brand = models.CharField(max_length=100, null=True, blank=True)
-    jap1of2_brand = models.CharField(max_length=100, null=True, blank=True)
-    influ2of2_brand = models.CharField(max_length=100, null=True, blank=True) 
-    mmr1_brand = models.CharField(max_length=100, null=True, blank=True)
-    vari1_brand = models.CharField(max_length=100, null=True, blank=True)
-    dtbooster1_brand = models.CharField(max_length=100, null=True, blank=True)
-    ipbooster1_brand = models.CharField(max_length=100, null=True, blank=True)
-    hibooster1_brand = models.CharField(max_length=100, null=True, blank=True)
-    pcvbooster1_brand = models.CharField(max_length=100, null=True, blank=True)
-    inacthepa1_brand = models.CharField(max_length=100, null=True, blank=True)
-    inacthepa2_brand = models.CharField(max_length=100, null=True, blank=True)
-    mening_brand = models.CharField(max_length=100, null=True, blank=True)
-    typhoid_brand = models.CharField(max_length=100, null=True, blank=True)
-    jap2of2_brand = models.CharField(max_length=100, null=True, blank=True)
-    dtbooster2_brand = models.CharField(max_length=100, null=True, blank=True)
-    ipbooster2_brand = models.CharField(max_length=100, null=True, blank=True)
-    mmr2_brand = models.CharField(max_length=100, null=True, blank=True)
-    vari2_brand = models.CharField(max_length=100, null=True, blank=True)
-    tdbooster3_brand = models.CharField(max_length=100, null=True, blank=True)
-    hpv1of2_brand = models.CharField(max_length=100, null=True, blank=True)
-    hpv2of2_brand = models.CharField(max_length=100, null=True, blank=True)
-    hpv1of3_brand = models.CharField(max_length=100, null=True, blank=True)
-    hpv2of3_brand = models.CharField(max_length=100, null=True, blank=True)
-    hpv3of3_brand = models.CharField(max_length=100, null=True, blank=True)
-
-    # Vaccine Date
-    bcg_date = models.DateField(null=True, blank=True)
-    hepb1_date = models.DateField(null=True, blank=True)
-    hepb2_date = models.DateField(null=True, blank=True)
-    dt1_date = models.DateField(null=True, blank=True)
-    ip1_date = models.DateField(null=True, blank=True)
-    hi1_date = models.DateField(null=True, blank=True)
-    pcv1_date = models.DateField(null=True, blank=True)
-    rota1_date = models.DateField(null=True, blank=True)
-    dt2_date = models.DateField(null=True, blank=True)
-    ip2_date = models.DateField(null=True, blank=True)
-    hi2_date = models.DateField(null=True, blank=True)
-    pcv2_date = models.DateField(null=True, blank=True)
-    rota2_date = models.DateField(null=True, blank=True)
-    hepb3_date = models.DateField(null=True, blank=True)
-    dt3_date = models.DateField(null=True, blank=True)
-    ip3_date = models.DateField(null=True, blank=True)
-    hi3_date = models.DateField(null=True, blank=True)
-    pcv3_date = models.DateField(null=True, blank=True)
-    rota3_date = models.DateField(null=True, blank=True)
-    influ1of2_date = models.DateField(null=True, blank=True)
-    measles_date = models.DateField(null=True, blank=True)
-    jap1of2_date = models.DateField(null=True, blank=True)
-    influ2of2_date = models.DateField(null=True, blank=True) 
-    mmr1_date = models.DateField(null=True, blank=True)
-    vari1_date = models.DateField(null=True, blank=True)
-    dtbooster1_date = models.DateField(null=True, blank=True)
-    ipbooster1_date = models.DateField(null=True, blank=True)
-    hibooster1_date = models.DateField(null=True, blank=True)
-    pcvbooster1_date = models.DateField(null=True, blank=True)
-    inacthepa1_date = models.DateField(null=True, blank=True)
-    inacthepa2_date = models.DateField(null=True, blank=True)
-    mening_date = models.DateField(null=True, blank=True)
-    typhoid_date = models.DateField(null=True, blank=True)
-    jap2of2_date = models.DateField(null=True, blank=True)
-    dtbooster2_date = models.DateField(null=True, blank=True)
-    ipbooster2_date = models.DateField(null=True, blank=True)
-    mmr2_date = models.DateField(null=True, blank=True)
-    vari2_date = models.DateField(null=True, blank=True)
-    tdbooster3_date = models.DateField(null=True, blank=True)
-    hpv1of2_date = models.DateField(null=True, blank=True)
-    hpv2of2_date = models.DateField(null=True, blank=True)
-    hpv1of3_date = models.DateField(null=True, blank=True)
-    hpv2of3_date = models.DateField(null=True, blank=True)
-    hpv3of3_date = models.DateField(null=True, blank=True)
-
-    # Vaccine Location
-    bcg_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hepb1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hepb2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    dt1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    ip1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hi1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    pcv1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    rota1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    dt2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    ip2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hi2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    pcv2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    rota2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hepb3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    dt3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    ip3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hi3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    pcv3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    rota3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    influ1of2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    measles_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    jap1of2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    influ2of2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC) 
-    mmr1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    vari1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    dtbooster1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    ipbooster1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hibooster1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    pcvbooster1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    inacthepa1_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    inacthepa2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    mening_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    typhoid_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    jap2of2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    dtbooster2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    ipbooster2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    mmr2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    vari2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    tdbooster3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hpv1of2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hpv2of2_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hpv1of3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hpv2of3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-    hpv3of3_loc = models.CharField(max_length=100, null=True, blank=True, choices=LOC)
-
-    # Vaccine Remarks
-    bcg_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hepb1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hepb2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    dt1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    ip1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hi1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    pcv1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    rota1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    dt2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    ip2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hi2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    pcv2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    rota2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hepb3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    dt3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    ip3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hi3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    pcv3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    rota3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    influ1of2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    measles_remarks = models.CharField(max_length=100, null=True, blank=True)
-    jap1of2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    influ2of2_remarks = models.CharField(max_length=100, null=True, blank=True) 
-    mmr1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    vari1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    dtbooster1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    ipbooster1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hibooster1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    pcvbooster1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    inacthepa1_remarks = models.CharField(max_length=100, null=True, blank=True)
-    inacthepa2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    mening_remarks = models.CharField(max_length=100, null=True, blank=True)
-    typhoid_remarks = models.CharField(max_length=100, null=True, blank=True)
-    jap2of2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    dtbooster2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    ipbooster2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    mmr2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    vari2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    tdbooster3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hpv1of2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hpv2of2_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hpv1of3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hpv2of3_remarks = models.CharField(max_length=100, null=True, blank=True)
-    hpv3of3_remarks = models.CharField(max_length=100, null=True, blank=True)
-
     def __str__(self):
         return "{}, {}".format(self.last_name, self.first_name)
 
@@ -287,13 +101,55 @@ class Appointment(models.Model):
         ('Rescheduled', 'Rescheduled'),
         ('Requested', 'Requested'),
     )
-    patient = models.ForeignKey(Patient, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=STATUS, null=True)
     date = models.DateField(null=True)
     time = models.TimeField(null=True)
     doctor = models.ForeignKey(Physician, on_delete=models.CASCADE)
     visit = models.CharField(max_length=100, null=True)
     location = models.CharField(max_length=100, null=True)
+    date_created = models.DateTimeField(null=True, auto_now_add=True)
 
     def __str__(self):
-        return str(self.patient)
+        return '{} on {}'.format(self.patient, self.date)
+
+class Vaccine(models.Model):
+    LOCATION = (
+        ('R thigh', 'R thigh'), ('L thigh', 'L thigh'), ('R arm ', 'R arm'),
+        ('L arm', 'L arm'), ('R buttocks', 'R buttocks'), ('L buttocks', 'L buttocks'),
+    )
+    VACCINES = (
+        ('BCG', 'BCG'), ('Hepatitis B #1', 'Hepatitis B #1'), ('Hepatitis B #2', 'Hepatitis B #2'), ('DTaP/DTwP #1', 'DTaP/DTwP #1'), ('IPV/OPV #1', 'IPV/OPV #1'),
+        ('HiB #1', 'HiB #1'), ('PCV #1', 'PCV #1'), ('Rotavirus #1', 'Rotavirus #1'), ('DTaP/DTwP #2', 'DTaP/DTwP #2'), ('IPV/OPV #2', 'IPV/OPV #2'),
+        ('HiB #2', 'HiB #2'), ('PCV #2', 'PCV #2'), ('Rotavirus #2', 'Rotavirus #2'), ('Hepatitis B #3', 'Hepatitis B #3'), ('DTaP/DTwP #3', 'DTaP/DTwP #3'),
+        ('IPV/OPV #3', 'IPV/OPV #3'), ('HiB #3', 'HiB #3'), ('PCV #3', 'PCV #3'), ('Rotavirus #3', 'Rotavirus #3'), ('Influenza #1', 'Influenza #1'),
+        ('Measles', 'Measles'), ('Japanese Encephalitis B #1', 'Japanese Encephalitis B #1'), ('Influenza #1', 'Influenza #1'), ('MMR #1', 'MMR #1'), ('Varicella #1', 'Varicella #1'),
+        ('DTaP/DTwP Booster #1', 'DTaP/DTwP Booster #1'), ('IPV/OPV Booster #1', 'IPV/OPV Booster #1'), ('HiB Booster #1', 'HiB Booster #1'), ('PCV Booster #1', 'PCV Booster #1'), ('Inactivated Hepatitis A #1', 'Inactivated Hepatitis A #1'),
+        ('Inactivated Hepatitis A #2', 'Inactivated Hepatitis A #2'), ('Meninggococcal vaccine', 'Meninggococcal vaccine'), ('Typhoid', 'Typhoid'), ('Japanese Encephalitis B #2', 'Japanese Encephalitis B #2'), ('DTaP/DTwP Booster #2', 'DTaP/DTwP Booster #2'),
+        ('IPV/OPV Booster #2', 'IPV/OPV Booster #2'), ('MMR #2', 'MMR #2'), ('Varicella #2', 'Varicella #2'), ('Td/Tdap Booster #3', 'Td/Tdap Booster #3'), ('HPV #1', 'HPV #1'),
+        ('HPV #2', 'HPV #2'), ('HPV #1', 'HPV #1'), ('HPV #2', 'HPV #2'), ('HPV #3', 'HPV #3'), ('Influenza', 'Influenza'),
+    )
+    AGE = (
+        ('Birth', 'Birth'), ('2 to 3 months', '2 to 3 months'), ('4 to 5 months', '4 to 5 months'), ('6 to 7 months', '6 to 7 months'), ('9 months', '9 months'), 
+        ('12 to 15 months', '12 to 15 months'), ('18 to 21 months', '18 to 21 months'), ('24 months', '24 months'), ('4 to 6 yrs ', '4 to 6 yrs '), 
+        ('10 yrs', '10 yrs'), ('9-14 yrs', '9-14 yrs'), ('15 and up', '15 and up'), ('Annual', 'Annual'),
+    )
+    DOSE = (
+        ('1 of 1', '1 of 1'), ('1 of 2', '1 of 2'), ('1 of 3', '1 of 3'), ('1 of 4', '1 of 4'), ('1 of 5', '1 of 5'),
+        ('2 of 2', '2 of 2'), (' 2 of 3', '2 of 3'), ('2 of 4', '2 of 4'), ('2 of 5', '2 of 5'),
+        ('3 of 3', '3 of 3'), ('3 of 4', '3 of 4'), ('3 of 5', '3 of 5'),
+        ('4 of 4', '4 of 4'), ('4 of 5', '4 of 5'),
+        ('5 of 5', '5 of 5'), ('every 10 years', 'every 10 years'),
+    )
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
+    age = models.CharField(max_length=50, null=True, choices=AGE)
+    name = models.CharField(max_length=50, null=True, choices=VACCINES)
+    dose = models.CharField(max_length=50, null=True, choices=DOSE)
+    brand = models.CharField(max_length=50, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    location = models.CharField(max_length=50, null=True, blank=True, choices=LOCATION)
+    remarks = models.CharField(max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return "{} for {}".format(self.name, self.patient)
+        

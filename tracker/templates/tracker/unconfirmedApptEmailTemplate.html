@@ -1,0 +1,11 @@
+Hi {{appointment.patient.first_name}}! <br><br>
+
+This is from {{appointment.patient.attending_doctor}} of BAQNA - {{appointment.location}} we have not received <br>
+CONFIRMATION of your appointment this {{appointment.date | date:'D, F j Y '}} at {{appointment.time}} <br>
+Your child is due for {{appointment.visit}}. If you need to reschedule, message  {{appointment.patient.attending_doctor.cell_no}}. <br>
+If no confirmation until tomorrow we will have to CANCEL the appointment. <br><br>
+
+Thank you.<br><br>
+
+Best Regards,
+BAQNA - {{vaccine.location}}

@@ -1,0 +1,40 @@
+{% extends 'tracker/main.html' %}
+
+{% block content %}
+
+<style>
+  .card{
+    margin: 0;
+    float: none;
+    margin-bottom: 10px;
+  }
+  .row{
+    cursor: pointer;
+  }
+</style>
+
+<nav class="navbar navbar-light" style="background-color: rgb(179, 179, 179);">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Appointment Request</span>
+    </div>
+</nav>
+{% if appointments %}
+{% for appointment in appointments %}
+<div class="card card-body bg-light text-black">
+  <div class="row" id='appointment' onclick="window.location='{% url 'appointment' appointment.patient.id %}'">
+    <div class="col">{{appointment.date}}</div>
+    <div class="col">{{appointment.time}}</div>
+    <div class="col">for a {{appointment.visit}} visit</div>
+    <div class="col">Record ID #{{appointment.patient.id}} {{appointment.patient}}</div>
+  </div>
+</div>
+{% endfor %} 
+{% else %}
+<div class="card card-body">
+  <div class="row">
+    <div class="col">No confirmed appointments yet.</div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock content %}

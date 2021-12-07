@@ -1,0 +1,92 @@
+{% include 'tracker/info_header.html' %}
+{% block content %}
+
+<style>
+</style>
+
+
+<div class="container-fluid" style="padding:1%; ">
+    <div class="row">
+        <div class="col-lg-2" style="background-color: rgb(255, 255, 255);display: flex; justify-content: center; align-items: center; padding-top: 8%; padding-bottom: 8%;">
+            <div class="btn-group-vertical" style="display: block;">
+              <a class="btn btn-outline-primary" href="{% url 'patient' patient.id %}">Profile</a>
+              <a class="btn btn-outline-primary" href="{% url 'appointment' patient.id %}">Appointment</a>
+              <a class="btn btn-outline-primary" href="#">Vaccine</a>
+              <a class="btn btn-outline-primary" href="{% url 'portal' patient.id %}">Portal</a>
+              <a class="btn btn-outline-primary" href="{% url 'certificate' patient.id %}">Certificate</a>
+            </div>
+        </div>
+
+        <div class="col-lg-10" style="background-color: white; padding-top: 0%; padding-bottom: 0%;">
+            <div class="vaccine-table">
+                <form class="edit-vaccine-form" action="" method="POST">
+                    <table class="table-bordered align-middle table-sm" style="width: 100%;">
+                        <thead class="thead-warning" style="background-color: rgb(214, 214, 214);">
+                            <tr>
+                                <td><b>Age</b></td>
+                                <td><b>Vaccine</b></td>
+                                <td><b>Dose</b></td>
+                                <td><b>Brand</b></td>
+                                <td><b>Date Given</b></td>
+                                <td><b>Location</b></td>
+                                <td><b>Remarks</b></td>
+                            </tr>
+                        </thead>
+                        {% csrf_token %}
+                        <tbody>
+                            {{formset.management_form}}
+                            {% for form in formset.forms %}
+                            <tr>
+                                {% for field in form.visible_fields %}
+                                <td>
+                                {% if forloop.first %}
+                                    {% for hidden in form.hidden_fields %}
+                                    {{hidden}}
+                                    {% endfor %}
+                                {% endif %}
+                                {{field}}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-success" style="margin-top: 12px;">Save</button>
+                    <a class="btn btn-danger" href="{% url 'vaccine' patient.id %}">Cancel</a> 
+                </form>               
+            </div>
+        </div>
+          {% if messages %}
+              {% for message in messages %}
+                {% if message.tags == 'success' %}
+                  <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="message">
+                      &nbsp;{{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  </div>
+                {% elif message.tags == 'error' %}
+                  <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle"></i>
+                    <div class="message">
+                      &nbsp;{{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  </div>  
+                {% endif %}
+              {% endfor %}  
+            {% endif %}
+    </div>
+</div>
+
+<script>
+    var elems = document.getElementsByClassName('form-control');
+    console.log();
+    document.getElementById('age').setAttribute('disabled', true);
+    document.getElementById('name').setAttribute('disabled', true);
+    document.getElementById('dose').setAttribute('disabled', true);
+        
+    
+</script>
+{% endblock content %}

@@ -1,0 +1,188 @@
+{% extends 'tracker/main.html' %}
+    {% block content %}
+    
+    <style>
+    </style>
+    
+    <nav class="navbar navbar-expand-xl" style="background-color: rgb(214, 214, 214);">
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse me-auto" id="navbarTogglerDemo02">
+            <div style="margin-right: auto; margin-top: 10px;">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0 navbar-custom">
+                <li class="nav-item" style="margin-right: 5px">
+                    <h4>Due Vaccines by Group</h4>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid" style="padding:1%; ">
+        <div class="row">
+            <div class="col-lg-2" style="background-color: rgb(255, 255, 255);display: flex; justify-content: center; align-items: center; padding-top: 8%; padding-bottom: 8%;">
+                <div class="btn-group-vertical" style="display: block;">
+                  <a class="btn btn-outline-primary active" href="#">Report</a>
+                  <div class="btn-group dropend">
+                    <a class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      Reminder
+                    </a>
+                    <ul class="dropdown-menu">
+                        <a class="btn btn-outline-primary" href="{% url 'dueVax' %}">Due Vaccine w/o Appts</a>
+                        <a class="btn btn-outline-primary" href="{% url 'unconfirmedAppts' %}">Unconfirmed Appts</a>
+                    </ul>
+                  </div>
+                  {% if request.user.physician.can_reg == "Yes" or request.user.is_superuser %}
+                  
+                  <div class="btn-group dropend">
+                    <a class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      Staff
+                    </a>
+                    <ul class="dropdown-menu">
+                        <a class="btn btn-outline-primary" href="{% url 'staffUpdate' %}">Update</a>
+                        <a class="btn btn-outline-primary" href="{% url 'staffCreate' %}">Create</a>
+                    </ul>
+                  </div>
+                  {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-10" style="background-color: white; padding-top: 0%; padding-bottom: 0%;">
+              <div class="report-panel">
+                <table class="table-bordered align-middle table-sm" style="width: 100%;">
+                  <thead class="thead-warning" style="background-color: rgb(214, 214, 214);">
+                    <tr>
+                      <td>Vaccine</td>
+                      <td>Total Patients</td>
+                      <td>Confirmed</td>
+                      <td>No Confirmation</td>
+                      <td>No Appointment</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>BCG</td>
+                      <td>{{total_bcg}}</td>
+                      <td>{{confirmed_bcg}}</td>
+                      <td>{{unconfirmed_bcg}}</td>
+                      <td>{{bcg_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Hepatitis B</td>
+                      <td>{{total_hb}}</td>
+                      <td>{{confirmed_hb}}</td>
+                      <td>{{unconfirmed_hb}}</td>
+                      <td>{{hb_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>DTaP/DTwP</td>
+                      <td>{{total_dtap}}</td>
+                      <td>{{confirmed_dtap}}</td>
+                      <td>{{unconfirmed_dtap}}</td>
+                      <td>{{dtap_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>OPV/IPV</td>
+                      <td>{{total_ipv}}</td>
+                      <td>{{confirmed_ipv}}</td>
+                      <td>{{unconfirmed_ipv}}</td>
+                      <td>{{ipv_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>HiB</td>
+                      <td>{{total_hib}}</td>
+                      <td>{{confirmed_hib}}</td>
+                      <td>{{unconfirmed_hib}}</td>
+                      <td>{{hib_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>PCV</td>
+                      <td>{{total_pcv}}</td>
+                      <td>{{confirmed_pcv}}</td>
+                      <td>{{unconfirmed_pcv}}</td>
+                      <td>{{pcv_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Rotavirus</td>
+                      <td>{{total_rv}}</td>
+                      <td>{{confirmed_rv}}</td>
+                      <td>{{unconfirmed_rv}}</td>
+                      <td>{{rv_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Measles</td>
+                      <td>{{total_msls}}</td>
+                      <td>{{confirmed_msls}}</td>
+                      <td>{{unconfirmed_msls}}</td>
+                      <td>{{msls_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>MMR</td>
+                      <td>{{total_mmr}}</td>
+                      <td>{{confirmed_mmr}}</td>
+                      <td>{{unconfirmed_mmr}}</td>
+                      <td>{{mmr_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Varicella</td>
+                      <td>{{total_vrcl}}</td>
+                      <td>{{confirmed_vrcl}}</td>
+                      <td>{{unconfirmed_vrcl}}</td>
+                      <td>{{vrcl_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Influenza</td>
+                      <td>{{total_flu}}</td>
+                      <td>{{confirmed_flu}}</td>
+                      <td>{{unconfirmed_flu}}</td>
+                      <td>{{flu_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Jap Encephalitis B</td>
+                      <td>{{total_jeb}}</td>
+                      <td>{{confirmed_jeb}}</td>
+                      <td>{{unconfirmed_jeb}}</td>
+                      <td>{{jeb_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Hepatitis A</td>
+                      <td>{{total_ha}}</td>
+                      <td>{{confirmed_ha}}</td>
+                      <td>{{unconfirmed_ha}}</td>
+                      <td>{{ha_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Meningococcal</td>
+                      <td>{{total_mng}}</td>
+                      <td>{{confirmed_mng}}</td>
+                      <td>{{unconfirmed_mng}}</td>
+                      <td>{{mng_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Typhoid</td>
+                      <td>{{total_typ}}</td>
+                      <td>{{confirmed_typ}}</td>
+                      <td>{{unconfirmed_typ}}</td>
+                      <td>{{typ_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>Td/Tdap</td>
+                      <td>{{total_td}}</td>
+                      <td>{{confirmed_td}}</td>
+                      <td>{{unconfirmed_td}}</td>
+                      <td>{{td_no_appt}}</td>
+                    </tr>
+                    <tr>
+                      <td>HPB</td>
+                      <td>{{total_hpv}}</td>
+                      <td>{{confirmed_hpv}}</td>
+                      <td>{{unconfirmed_hpv}}</td>
+                      <td>{{hpv_no_appt}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+          </div>
+        </div>
+    </div>
+    
+    {% endblock content %}

@@ -1,4 +1,3 @@
-from typing import Text
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -63,10 +62,10 @@ class CreateRecordFormPatient(ModelForm):
 
     birthdate = forms.DateField(
         widget=DateInput(
-            attrs={'class': 'form-control', 'id': 'dob', 'placeholder': 'dd/mm/yyyy'},
-            format='%d-%m-%Y',
+            attrs={'class': 'form-control datetimepicker-input', 'id': 'dob', 'placeholder': 'mm-dd-yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
         ),
-        input_formats=['%d-%m-%Y']
     )
     class Meta:
         model = Patient
@@ -112,10 +111,10 @@ class CreateRecordFormPatient(ModelForm):
 class CertDateForm(ModelForm):
     cert_date = forms.DateField(
         widget=DateInput(
-            attrs={'class': 'form-control', 'id': 'date', 'placeholder': 'mm-dd-yyyy'},
-            format='%m-%d-%Y',
+            attrs={'class': 'form-control datetimepicker-input', 'placeholder': 'mm-dd-yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
         ),
-        input_formats=['%m-%d-%Y']
     )
     class Meta:
         model = Patient
@@ -124,29 +123,41 @@ class CertDateForm(ModelForm):
 class AppointmentForm(ModelForm):
     date = forms.DateField(
         widget=DateInput(
-            attrs={'class': 'form-control', 'id': 'date', 'placeholder': 'mm/dd/yyyy'},
-            format='%m-%d-%Y',
+            attrs={'class': 'form-control datetimepicker-input', 'placeholder': 'mm/dd/yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
         ),
-        input_formats=['%m-%d-%Y']
     )
     class Meta:
         model = Appointment
         fields = '__all__'
         widgets = {
             'patient': HiddenInput(attrs={'type': 'hidden'}),
-            'status': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Status'}),
-            'time': forms.NumberInput(attrs={'type': 'time', 'class': 'form-control', 'placeholder': 'Time'}),
-            'doctor': Select(attrs={'class': 'form-control', 'placeholder': 'Doctor'}),
-            'visit': TextInput(attrs={'class': 'form-control', 'placeholder': 'Visit'}),
-            'location': TextInput(attrs={'class': 'form-control', 'placeholder': 'Location'}),
+            'status': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Status', 'id':'status'}),
+            'time': forms.NumberInput(attrs={'type': 'time', 'class': 'form-control', 'placeholder': 'Time', 'format': '%I:%M %p', 'id':'time'}),
+            'doctor': HiddenInput(attrs={'type': 'hidden'}),
+            'visit': TextInput(attrs={'class': 'form-control', 'placeholder': 'Visit', 'id':'visit'}),
+            'location': TextInput(attrs={'class': 'form-control', 'placeholder': 'Location', 'id':'location'}),
         }
 
-class EditAppointmentForm(ModelForm):
+class AppointmentFormPatient(ModelForm):
+    date = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control datetimepicker-input', 'placeholder': 'mm/dd/yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
+        ),
+    )
     class Meta:
         model = Appointment
-        fields = ('status','patient')
+        fields = '__all__'
         widgets = {
             'patient': HiddenInput(attrs={'type': 'hidden'}),
+            'status': HiddenInput(attrs={'type': 'hidden'}),
+            'time': forms.NumberInput(attrs={'type': 'time', 'class': 'form-control', 'placeholder': 'Time', 'format': '%I:%M %p'}),
+            'doctor': HiddenInput(attrs={'type': 'hidden'}),
+            'visit': TextInput(attrs={'class': 'form-control', 'placeholder': 'Visit'}),
+            'location': TextInput(attrs={'class': 'form-control', 'placeholder': 'Location'}),
         }
 
 class PortalForm(UserCreationForm):
@@ -160,6 +171,15 @@ class PortalForm(UserCreationForm):
             'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': True,}),
         }
 
+class PortalFormEdit(ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+        widgets = {
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Username', 'required': True}),
+            'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': True,}),
+        }
+
 class PatientUserForm(ModelForm):
     class Meta:
         model = PatientUser
@@ -168,82 +188,160 @@ class PatientUserForm(ModelForm):
             'relationship': TextInput(attrs={'class': 'form-control', 'placeholder': 'Relationship'}),
         }
 
-class PatientVaccineForm(ModelForm):
-    bcg_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hepb1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hepb2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    dt1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    ip1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hi1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    pcv1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    rota1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    dt2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    ip2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hi2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    pcv2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    rota2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hepb3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    dt3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    ip3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hi3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    pcv3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    rota3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    influ1of2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    measles_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    jap1of2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    influ2of2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False) 
-    mmr1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    vari1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    dtbooster1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    ipbooster1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hibooster1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    pcvbooster1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    inacthepa1_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    inacthepa2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    mening_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    typhoid_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    jap2of2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    dtbooster2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    ipbooster2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    mmr2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    vari2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    tdbooster3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hpv1of2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hpv2of2_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hpv1of3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hpv2of3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    hpv3of3_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'mm-dd-yyyy'}, format='%m-%d-%Y'), input_formats=['%m-%d-%Y'], required=False)
-    
+class VaccineForm(ModelForm):
+    VACCINES = (
+        ('BCG', 'BCG'), ('Hepatitis B #1', 'Hepatitis B #1'), ('Hepatitis B #2', 'Hepatitis B #2'), ('DTaP/DTwP #1', 'DTaP/DTwP #1'), ('IPV/OPV #1', 'IPV/OPV #1'),
+        ('HiB #1', 'HiB #1'), ('PCV #1', 'PCV #1'), ('Rotavirus #1', 'Rotavirus #1'), ('DTaP/DTwP #2', 'DTaP/DTwP #2'), ('IPV/OPV #2', 'IPV/OPV #2'),
+        ('HiB #2', 'HiB #2'), ('PCV #2', 'PCV #2'), ('Rotavirus #2', 'Rotavirus #2'), ('Hepatitis B #3', 'Hepatitis B #3'), ('DTaP/DTwP #3', 'DTaP/DTwP #3'),
+        ('IPV/OPV #3', 'IPV/OPV #3'), ('HiB #3', 'HiB #3'), ('PCV #3', 'PCV #3'), ('Rotavirus #3', 'Rotavirus #3'), ('Influenza #1', 'Influenza #1'),
+        ('Measles', 'Measles'), ('Japanese Encephalitis B #1', 'Japanese Encephalitis B #1'), ('Influenza #1', 'Influenza #1'), ('MMR #1', 'MMR #1'), ('Varicella #1', 'Varicella #1'),
+        ('DTaP/DTwP Booster #1', 'DTaP/DTwP Booster #1'), ('IPV/OPV Booster #1', 'IPV/OPV Booster #1'), ('HiB Booster #1', 'HiB Booster #1'), ('PCV Booster #1', 'PCV Booster #1'), ('Inactivated Hepatitis A #1', 'Inactivated Hepatitis A #1'),
+        ('Inactivated Hepatitis A #2', 'Inactivated Hepatitis A #2'), ('Meninggococcal vaccine', 'Meninggococcal vaccine'), ('Typhoid', 'Typhoid'), ('Japanese Encephalitis B #2', 'Japanese Encephalitis B #2'), ('DTaP/DTwP Booster #2', 'DTaP/DTwP Booster #2'),
+        ('IPV/OPV Booster #2', 'IPV/OPV Booster #2'), ('MMR #2', 'MMR #2'), ('Varicella #2', 'Varicella #2'), ('Td/Tdap Booster #3', 'Td/Tdap Booster #3'), ('HPV #1', 'HPV #1'),
+        ('HPV #2', 'HPV #2'), ('HPV #1', 'HPV #1'), ('HPV #2', 'HPV #2'), ('HPV #3', 'HPV #3'), ('Influenza', 'Influenza'),
+    )
+    AGE = (
+        ('Birth', 'Birth'), ('2 to 3 months', '2 to 3 months'), ('4 to 5 months', '4 to 5 months'), ('6 to 7 months', '6 to 7 months'), ('9 months', '9 months'), 
+        ('12 to 15 months', '12 to 15 months'), ('18 to 21 months', '18 to 21 months'), ('24 months', '24 months'), ('4 to 6 yrs ', '4 to 6 yrs '), 
+        ('10 yrs', '10 yrs'), ('9-14 yrs', '9-14 yrs'), ('15 and up', '15 and up'), ('Annual', 'Annual'),
+    )
+    DOSE = (
+        ('1 of 1', '1 of 1'), ('1 of 2', '1 of 2'), ('1 of 3', '1 of 3'), ('1 of 4', '1 of 4'), ('1 of 5', '1 of 5'),
+        ('2 of 2', '2 of 2'), (' 2 of 3', '2 of 3'), ('2 of 4', '2 of 4'), ('2 of 5', '2 of 5'),
+        ('3 of 3', '3 of 3'), ('3 of 4', '3 of 4'), ('3 of 5', '3 of 5'),
+        ('4 of 4', '4 of 4'), ('4 of 5', '4 of 5'),
+        ('5 of 5', '5 of 5'), ('every 10 years', 'every 10 years'),
+    )
+    LOCATION = (
+        ('R thigh', 'R thigh'), ('L thigh', 'L thigh'), ('R arm ', 'R arm'),
+        ('L arm', 'L arm'), ('R buttocks', 'R buttocks'), ('L buttocks', 'L buttocks'),
+    )
+    age = ChoiceField(choices=AGE, widget=Select(attrs={'class': 'form-control', 'placeholder': 'Age'}))
+    name = ChoiceField(choices=VACCINES, widget=Select(attrs={'class': 'form-control', 'placeholder': 'Vaccine'}))
+    dose = ChoiceField(choices=DOSE, widget=Select(attrs={'class': 'form-control', 'placeholder': 'Dose'}))
+    #location = forms.ChoiceField(choices=LOCATION, widget=Select(attrs={'class': 'form-control', 'placeholder': 'Location'}))
+    date = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control datetimepicker-input', 'placeholder': 'mm/dd/yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
+        ),
+        required=False
+    )
     class Meta:
-        model = Patient
-        fields = (
-            'bcg_brand', 'hepb1_brand', 'hepb2_brand', 'dt1_brand', 'ip1_brand', 'hi1_brand', 'pcv1_brand', 'rota1_brand', 'dt2_brand',
-            'ip2_brand', 'hi2_brand', 'pcv2_brand', 'rota2_brand', 'hepb3_brand', 'dt3_brand', 'ip3_brand', 'hi3_brand', 'pcv3_brand',
-            'rota3_brand', 'influ1of2_brand', 'measles_brand', 'jap1of2_brand', 'influ2of2_brand', 'mmr1_brand', 'vari1_brand', 'dtbooster1_brand',
-            'ipbooster1_brand', 'hibooster1_brand', 'pcvbooster1_brand', 'inacthepa1_brand', 'inacthepa2_brand', 'mening_brand', 'typhoid_brand',
-            'jap2of2_brand', 'dtbooster2_brand', 'ipbooster2_brand', 'mmr2_brand', 'vari2_brand', 'tdbooster3_brand', 'hpv1of2_brand', 'hpv2of2_brand',
-            'hpv1of3_brand', 'hpv2of3_brand', 'hpv3of3_brand',
+        model = Vaccine
+        fields = ('patient', 'age', 'name', 'dose', 'brand', 'date', 'location', 'remarks')
+        widgets = {
+            'patient': HiddenInput(attrs={'type': 'hidden'}),
+            'location': Select(attrs={'class':'form-control', 'placeholder': 'Location'}),
+            'brand': TextInput(attrs={'class': 'form-control', 'placeholder': 'Brand'}),
+            'remarks': TextInput(attrs={'class': 'form-control', 'placeholder': 'Remarks'}),
+        }
 
-            'bcg_date', 'hepb1_date', 'hepb2_date', 'dt1_date', 'ip1_date', 'hi1_date', 'pcv1_date', 'rota1_date', 'dt2_date',
-            'ip2_date', 'hi2_date', 'pcv2_date', 'rota2_date', 'hepb3_date', 'dt3_date', 'ip3_date', 'hi3_date', 'pcv3_date',
-            'rota3_date', 'influ1of2_date', 'measles_date', 'jap1of2_date', 'influ2of2_date', 'mmr1_date', 'vari1_date', 'dtbooster1_date',
-            'ipbooster1_date', 'hibooster1_date', 'pcvbooster1_date', 'inacthepa1_date', 'inacthepa2_date', 'mening_date', 'typhoid_date',
-            'jap2of2_date', 'dtbooster2_date', 'ipbooster2_date', 'mmr2_date', 'vari2_date', 'tdbooster3_date', 'hpv1of2_date', 'hpv2of2_date',
-            'hpv1of3_date', 'hpv2of3_date', 'hpv3of3_date',
+class StaffCreateForm(UserCreationForm):
+    password1 = forms.CharField(widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password', 'required': True,}))
+    password2 = forms.CharField(widget=PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password', 'required': True,}))
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
+        widgets = {
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Username', 'required': True}),
+            'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': True,}),
+        }
 
-            'bcg_loc', 'hepb1_loc', 'hepb2_loc', 'dt1_loc', 'ip1_loc', 'hi1_loc', 'pcv1_loc', 'rota1_loc', 'dt2_loc',
-            'ip2_loc', 'hi2_loc', 'pcv2_loc', 'rota2_loc', 'hepb3_loc', 'dt3_loc', 'ip3_loc', 'hi3_loc', 'pcv3_loc',
-            'rota3_loc', 'influ1of2_loc', 'measles_loc', 'jap1of2_loc', 'influ2of2_loc', 'mmr1_loc', 'vari1_loc', 'dtbooster1_loc',
-            'ipbooster1_loc', 'hibooster1_loc', 'pcvbooster1_loc', 'inacthepa1_loc', 'inacthepa2_loc', 'mening_loc', 'typhoid_loc',
-            'jap2of2_loc', 'dtbooster2_loc', 'ipbooster2_loc', 'mmr2_loc', 'vari2_loc', 'tdbooster3_loc', 'hpv1of2_loc', 'hpv2of2_loc',
-            'hpv1of3_loc', 'hpv2of3_loc', 'hpv3of3_loc',
+class StaffUpdateForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+        widgets = {
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Username', 'required': True}),
+            'email': TextInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': True,}),
+        }
 
-            'bcg_remarks', 'hepb1_remarks', 'hepb2_remarks', 'dt1_remarks', 'ip1_remarks', 'hi1_remarks', 'pcv1_remarks', 'rota1_remarks', 'dt2_remarks',
-            'ip2_remarks', 'hi2_remarks', 'pcv2_remarks', 'rota2_remarks', 'hepb3_remarks', 'dt3_remarks', 'ip3_remarks', 'hi3_remarks', 'pcv3_remarks',
-            'rota3_remarks', 'influ1of2_remarks', 'measles_remarks', 'jap1of2_remarks', 'influ2of2_remarks', 'mmr1_remarks', 'vari1_remarks', 'dtbooster1_remarks',
-            'ipbooster1_remarks', 'hibooster1_remarks', 'pcvbooster1_remarks', 'inacthepa1_remarks', 'inacthepa2_remarks', 'mening_remarks', 'typhoid_remarks',
-            'jap2of2_remarks', 'dtbooster2_remarks', 'ipbooster2_remarks', 'mmr2_remarks', 'vari2_remarks', 'tdbooster3_remarks', 'hpv1of2_remarks', 'hpv2of2_remarks',
-            'hpv1of3_remarks', 'hpv2of3_remarks', 'hpv3of3_remarks',
-        )
-        
-        
+class DoctorForm(ModelForm):
+    CAN_REG = (
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    )
+    date_start = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control datetimepicker-input', 'placeholder': 'mm/dd/yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
+        ),
+        required=False,
+    )
+    date_end = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control datetimepicker-input', 'placeholder': 'mm/dd/yyyy',
+                     'data-target': '#datetimepicker1'},
+                     format='%m/%d/%y'
+        ),
+        required=False,
+    )
+    cell_no = PhoneNumberField(
+        widget=PhoneNumberInternationalFallbackWidget, required=False
+    )
+    cell_no.widget.attrs = {'class': 'form-control', 'id': 'cell_no', 'placeholder': 'Contact (+63)'}
+    can_reg = forms.ChoiceField(choices=CAN_REG, widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'Can Register?'}))
+    class Meta:
+        model = Physician
+        exclude = ('user', )
+        widgets = {
+            'prefix': TextInput(attrs={'class': 'form-control', 'placeholder': 'Prefix',}),
+            'last_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'first_name': TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'title': TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}),
+            'doc_type': TextInput(attrs={'class': 'form-control', 'placeholder': 'Type'}), 
+        }
+
+class UnconfirmedApptsForm(ModelForm):
+    date_start = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'DD/MM/YYY'}
+            ,format=['%m/%d/%y']
+        ),
+        required=True,
+        input_formats=settings.DATE_INPUT_FORMAT
+    )
+
+    date_end = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'DD/MM/YYY'},
+            format='%m/%d/%y'
+        ),
+        required=True,
+        input_formats=settings.DATE_INPUT_FORMAT
+    )
+
+    class Meta:
+        model = Appointment
+        fields = ('date_start', 'date_end')
+
+class dueVaxForm(ModelForm):
+    date_start = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'DD/MM/YYY'}
+            ,format=['%m/%d/%y']
+        ),
+        required=True,
+        input_formats=settings.DATE_INPUT_FORMAT
+    )
+
+    date_end = forms.DateField(
+        widget=DateInput(
+            attrs={'class': 'form-control', 'placeholder': 'DD/MM/YYY'},
+            format='%m/%d/%y'
+        ),
+        required=True,
+        input_formats=settings.DATE_INPUT_FORMAT
+    )
+
+    class Meta:
+        model = Vaccine
+        fields = ('date_start', 'date_end')
+
+
+class EmailForm(forms.Form):
+    to_email = forms.CharField(max_length=30, required=True,widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'Email'}))

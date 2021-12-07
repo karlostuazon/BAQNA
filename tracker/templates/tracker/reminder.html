@@ -1,0 +1,35 @@
+{% extends 'tracker/main.html' %}
+{% block content %}
+
+<style>
+</style>
+
+<div class="container-fluid" style="padding:1%; ">
+    <div class="row">
+        <div class="col-lg-2" style="background-color: rgb(255, 255, 255);display: flex; justify-content: center; align-items: center; padding-top: 8%; padding-bottom: 8%;">
+            <div class="btn-group-vertical" style="display: block;">
+              <a class="btn btn-outline-primary" href="{% url 'report' %}">Report</a>
+              <div class="btn-group dropend">
+                <a class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Reminder
+                </a>
+                <ul class="dropdown-menu">
+                    <a class="btn btn-outline-primary" href="{% url 'dueVax' %}">Due Vaccine w/o Appts</a>
+                    <a class="btn btn-outline-primary" href="{% url 'unconfirmedAppts' %}">Unconfirmed Appts</a>
+                </ul>
+              </div>
+              {% if request.user.physician.can_reg == "Yes" %}
+              <div class="btn-group dropend">
+                <a class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Staff
+                </a>
+                <ul class="dropdown-menu">
+                    <a class="btn btn-outline-primary" href="{% url 'staffUpdate' %}">Update</a>
+                    <a class="btn btn-outline-primary" href="{% url 'staffCreate' %}">Create</a>
+                </ul>
+              </div>
+              {% endif %}
+            </div>
+        </div>
+
+{% endblock content %}
