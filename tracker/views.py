@@ -724,7 +724,7 @@ def report(request):
     ha_no_appt = total_ha - (confirmed_ha + unconfirmed_ha)
 
     #Meningococcal
-    mng = Vaccine.objects.filter(name__contains='Meningococcal')
+    mng = Vaccine.objects.filter(name__contains='Meninggococcal')
     confirmed_mng = appt.filter(patient__in=mng.values('patient'), date__in=mng.values('date'), status='Confirmed').count()
     unconfirmed_mng = appt.filter(patient__in=mng.values('patient'), date__in=mng.values('date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
