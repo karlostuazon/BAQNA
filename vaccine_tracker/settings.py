@@ -167,4 +167,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'planter121@gmail.com'
-EMAIL_HOST_PASSWORD = 'planterroot'
+#EMAIL_HOST_PASSWORD = 'planterroot'
+EMAIL_HOST_PASSWORD = 'rtypjwdrdxjnnlwv'
