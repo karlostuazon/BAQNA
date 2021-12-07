@@ -708,7 +708,7 @@ def report(request):
     flu_no_appt = total_flu - (confirmed_flu + unconfirmed_flu)
 
     #Jap Encephalitis B
-    jeb = Vaccine.objects.filter(name__contains='Jap Encephalitis B')
+    jeb = Vaccine.objects.filter(name__contains='Japanese Encephalitis B')
     confirmed_jeb = appt.filter(patient__in=jeb.values('patient'), date__in=jeb.values('date'), status='Confirmed').count()
     unconfirmed_jeb = appt.filter(patient__in=jeb.values('patient'), date__in=jeb.values('date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
