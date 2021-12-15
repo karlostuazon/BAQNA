@@ -43,6 +43,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
+from dateutil.relativedelta import relativedelta
 
 
 
@@ -81,7 +82,7 @@ def password_reset(request):
                         'username': user,
                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                         'token': default_token_generator.make_token(user),
-                        'domain': 'baqna.herokuapp.com',
+                        'domain': '127.0.0.1:8000',
                         'protocol': 'http',
                         }
                     subject, from_email, to = 'BAQNA - Password Reset Form', 'your_email@gmail.com', email
@@ -167,6 +168,7 @@ def homePagePatient(request):
     }
     return render(request, 'tracker/homePatient.html', data)
 
+
 #--CREATE RECORD VIEW--
 @login_required(login_url='login')
 def createRecord(request):
@@ -183,15 +185,15 @@ def createRecord(request):
             new_patient = patient_form.save()
 
             Vaccine.objects.bulk_create([
-                Vaccine(age='Birth', name='BCG', dose='1 of 1', patient=new_patient),
-                Vaccine(age='Birth', name='Hepatitis B #1', dose='1 of 3', patient=new_patient),
+                Vaccine(age='Birth', name='BCG', dose='1 of 1', patient=new_patient, due_date=new_patient.birthdate),
+                Vaccine(age='Birth', name='Hepatitis B #1', dose='1 of 3', patient=new_patient, due_date=new_patient.birthdate),
 
-                Vaccine(age='2 to 3 months', name='Hepatitis B #2', dose='2 of 3', patient=new_patient),
-                Vaccine(age='2 to 3 months', name='DTaP/DTwP #1', dose='1 of 5', patient=new_patient),
-                Vaccine(age='2 to 3 months', name='IPV/OPV #1', dose='1 of 5', patient=new_patient),
-                Vaccine(age='2 to 3 months', name='HiB #1', dose='1 of 4', patient=new_patient),
-                Vaccine(age='2 to 3 months', name='PCV #1', dose='1 of 4', patient=new_patient),
-                Vaccine(age='2 to 3 months', name='Rotavirus #1', dose='1 of 2', patient=new_patient),
+                Vaccine(age='2 to 3 months', name='Hepatitis B #2', dose='2 of 3', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=2)),
+                Vaccine(age='2 to 3 months', name='DTaP/DTwP #1', dose='1 of 5', patient=new_patient, due_date=new_patient.birthdate + relativedelta(weeks=6)),
+                Vaccine(age='2 to 3 months', name='IPV/OPV #1', dose='1 of 5', patient=new_patient, due_date=new_patient.birthdate + relativedelta(weeks=6)),
+                Vaccine(age='2 to 3 months', name='HiB #1', dose='1 of 4', patient=new_patient, due_date=new_patient.birthdate + relativedelta(weeks=6)),
+                Vaccine(age='2 to 3 months', name='PCV #1', dose='1 of 4', patient=new_patient, due_date=new_patient.birthdate + relativedelta(weeks=6)),
+                Vaccine(age='2 to 3 months', name='Rotavirus #1', dose='1 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(weeks=6)),
 
                 Vaccine(age='4 to 5 months', name='DTaP/DTwP #2', dose='2 of 5', patient=new_patient),
                 Vaccine(age='4 to 5 months', name='IPV/OPV #2', dose='2 of 5', patient=new_patient),
@@ -199,38 +201,38 @@ def createRecord(request):
                 Vaccine(age='4 to 5 months', name='PCV #2', dose='2 of 4', patient=new_patient),
                 Vaccine(age='4 to 5 months', name='Rotavirus #2', dose='2 of 2', patient=new_patient),
                 
-                Vaccine(age='6 to 7 months', name='Hepatitis B #3', dose='3 of 3', patient=new_patient),
+                Vaccine(age='6 to 7 months', name='Hepatitis B #3', dose='3 of 3', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=6)),
                 Vaccine(age='6 to 7 months', name='DTaP/DTwP #3', dose='3 of 5', patient=new_patient),
                 Vaccine(age='6 to 7 months', name='IPV/OPV #3', dose='3 of 5', patient=new_patient),
                 Vaccine(age='6 to 7 months', name='HiB #3', dose='3 of 4', patient=new_patient),
                 Vaccine(age='6 to 7 months', name='PCV #3', dose='3 of 4', patient=new_patient),
                 Vaccine(age='6 to 7 months', name='Rotavirus #3', dose='3 of 3', patient=new_patient),
-                Vaccine(age='6 to 7 months', name='Influenza #1', dose='1 of 2', patient=new_patient),
+                Vaccine(age='6 to 7 months', name='Influenza #1', dose='1 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=6)),
                 
-                Vaccine(age='9 months', name='Measles', dose='1 of 1', patient=new_patient),
-                Vaccine(age='9 months', name='Japanese Encephalitis B #1', dose='1 of 2', patient=new_patient),
-                Vaccine(age='9 months', name='Influenza #1', dose='2 of 2', patient=new_patient),
+                Vaccine(age='9 months', name='Measles', dose='1 of 1', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=9)),
+                Vaccine(age='9 months', name='Japanese Encephalitis B #1', dose='1 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=9)),
+                Vaccine(age='9 months', name='Influenza #2', dose='2 of 2', patient=new_patient),
 
-                Vaccine(age='12 to 15 months', name='MMR #1', dose='1 of 2', patient=new_patient),
-                Vaccine(age='12 to 15 months', name='Varicella #1', dose='1 of 2', patient=new_patient),
-                Vaccine(age='12 to 15 months', name='DTaP/DTwP Booster #1', dose='4 of 5', patient=new_patient),
-                Vaccine(age='12 to 15 months', name='IPV/OPV Booster #1', dose='4 of 5', patient=new_patient),
+                Vaccine(age='12 to 15 months', name='MMR #1', dose='1 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=12)),
+                Vaccine(age='12 to 15 months', name='Varicella #1', dose='1 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=12)),
+                Vaccine(age='12 to 15 months', name='DTaP/DTwP Booster #1', dose='4 of 5', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=12)),
+                Vaccine(age='12 to 15 months', name='IPV/OPV Booster #1', dose='4 of 5', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=12)),
                 Vaccine(age='12 to 15 months', name='HiB Booster #1', dose='4 of 4', patient=new_patient),
                 Vaccine(age='12 to 15 months', name='PCV Booster #1', dose='4 of 4', patient=new_patient),
-                Vaccine(age='12 to 15 months', name='Inactivated Hepatitis A #1', dose='1 of 2', patient=new_patient),
+                Vaccine(age='12 to 15 months', name='Inactivated Hepatitis A #1', dose='1 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=12)),
 
                 Vaccine(age='18 to 21 months', name='Inactivated Hepatitis A #2', dose='2 of 2', patient=new_patient),
 
                 Vaccine(age='24 months', name='Meninggococcal vaccine', dose='1 of 1', patient=new_patient),
-                Vaccine(age='24 months', name='Typhoid', dose='1 of 1', patient=new_patient),
-                Vaccine(age='24 months', name='Japanese Encephalitis B #1', dose='2 of 2', patient=new_patient),    
+                Vaccine(age='24 months', name='Typhoid', dose='1 of 1', patient=new_patient, due_date=new_patient.birthdate + relativedelta(years=2)),
+                Vaccine(age='24 months', name='Japanese Encephalitis B #2', dose='2 of 2', patient=new_patient, due_date=new_patient.birthdate + relativedelta(months=9)),    
 
-                Vaccine(age='4 to 6 yrs ', name='DTaP/DTwP Booster #2', dose='5 of 5', patient=new_patient),
+                Vaccine(age='4 to 6 yrs ', name='DTaP/DTwP Booster #2', dose='5 of 5', patient=new_patient, due_date=new_patient.birthdate + relativedelta(years=4)),
 
-                Vaccine(age='10 yrs', name='IPV/OPV Booster #2', dose='5 of 5', patient=new_patient),   
+                Vaccine(age='10 yrs', name='IPV/OPV Booster #2', dose='5 of 5', patient=new_patient, due_date=new_patient.birthdate + relativedelta(years=4)),   
                 Vaccine(age='10 yrs', name='MMR #2', dose='2 of 2', patient=new_patient), 
                 Vaccine(age='10 yrs', name='Varicella #2', dose='2 of 2', patient=new_patient), 
-                Vaccine(age='10 yrs', name='Td/Tdap Booster #3', dose='every 10 years', patient=new_patient),    
+                Vaccine(age='10 yrs', name='Td/Tdap Booster #3', dose='every 10 years', patient=new_patient, due_date=new_patient.birthdate + relativedelta(years=15)),    
                 
                 Vaccine(age='9-14 yrs', name='HPV #1', dose='1 of 2', patient=new_patient),
                 Vaccine(age='9-14 yrs', name='HPV #2', dose='2 of 2', patient=new_patient),   
@@ -239,7 +241,7 @@ def createRecord(request):
                 Vaccine(age='15 and up', name='HPV #2', dose='2 of 3', patient=new_patient),
                 Vaccine(age='15 and up', name='HPV #3', dose='3 of 3', patient=new_patient), 
 
-                Vaccine(age='Annual', name='Influenza', patient=new_patient), 
+                Vaccine(age='Annual', name='Influenza', patient=new_patient),
             ])
 
             messages.success(request, 'Account has been created for {} {}.'.format(pfname, plname))
@@ -251,7 +253,7 @@ def createRecord(request):
                 'latest_id': latest_id,
     }
     return render(request, "tracker/createRecord.html", context)
-    
+
 @login_required(login_url='login')
 def patient(request, pk):
     patient = Patient.objects.get(id=pk)
@@ -261,7 +263,7 @@ def patient(request, pk):
     months = curr_date.month - patient.birthdate.month
     years = curr_date.year - patient.birthdate.year
     age = "{} year {} month".format(years, months)
-    
+
     data = {
         'patient': patient, 'age': age,
     }
@@ -332,7 +334,7 @@ def appointment(request, pk):
 @login_required(login_url='login')
 def editAppointment(request, pk):
     patient = Patient.objects.get(id=pk)
-    appointments = Appointment.objects.filter(patient=patient)
+    appointments = Appointment.objects.filter(patient=patient).order_by('date')
 
     appointment_formset = forms.modelformset_factory(Appointment, AppointmentForm, extra=0)
     formset = appointment_formset(queryset=appointments)
@@ -590,11 +592,66 @@ def editVaccine(request, pk):
     vaccine_formset = forms.modelformset_factory(Vaccine, VaccineForm, 
     extra=0)
     formset = vaccine_formset(request.POST or None, queryset=vaccines)
-
     if request.method == 'POST':
         if formset.is_valid():
             for form in formset:
                 form.save()
+            #DTaP/DTwP
+            if vaccines.get(name='DTaP/DTwP #1').date is not None:
+                vaccines.filter(name='DTaP/DTwP #2').update(due_date=vaccines.get(name='DTaP/DTwP #1').date + relativedelta(weeks=4))
+            if vaccines.get(name='DTaP/DTwP #2').date is not None:
+                vaccines.filter(name='DTaP/DTwP #3').update(due_date=vaccines.get(name='DTaP/DTwP #2').date + relativedelta(weeks=4))
+            #HiB
+            if vaccines.get(name='HiB #1').date is not None:
+                vaccines.filter(name='HiB #2').update(due_date=vaccines.get(name='HiB #1').date + relativedelta(weeks=4))
+            if vaccines.get(name='HiB #2').date is not None:
+                vaccines.filter(name='HiB #3').update(due_date=vaccines.get(name='HiB #2').date + relativedelta(weeks=4))
+            if vaccines.get(name='HiB #3').date is not None:
+                vaccines.filter(name='HiB Booster #1').update(due_date=vaccines.get(name='HiB #3').date + relativedelta(months=6))
+            #HPV 9-14yrs
+            if vaccines.get(name='HPV #1', age__contains='9-14').date is not None:
+                vaccines.filter(name='HPV #2').update(due_date=vaccines.get(name='HPV #1', age__contains='9-14').date + relativedelta(months=6))
+            #HPV 15 up
+            if vaccines.get(name='HPV #1', age__contains='15').date is not None:
+                vaccines.filter(name='HPV #2').update(due_date=vaccines.get(name='HPV #1', age__contains='15').date + relativedelta(months=2))
+            if vaccines.get(name='HPV #2', age__contains='15').date is not None:
+                vaccines.filter(name='HPV #3').update(due_date=vaccines.get(name='HPV #2', age__contains='15').date + relativedelta(months=6))  
+            #Inactivated Hepatitis A
+            if vaccines.get(name='Inactivated Hepatitis A #1').date is not None:
+                vaccines.filter(name='Inactivated Hepatitis A #2').update(due_date=vaccines.get(name='Inactivated Hepatitis A #1').date + relativedelta(months=6)) 
+            #Influenza
+            if vaccines.get(name='Influenza #1').date is not None:
+                vaccines.filter(name='Influenza #2').update(due_date=vaccines.get(name='Influenza #1').date + relativedelta(weeks=4))
+            #IPV/OPV
+            if vaccines.get(name='IPV/OPV #1').date is not None:
+                vaccines.filter(name='IPV/OPV #2').update(due_date=vaccines.get(name='IPV/OPV #1').date + relativedelta(weeks=4))
+            if vaccines.get(name='IPV/OPV #2').date is not None:
+                vaccines.filter(name='IPV/OPV #3').update(due_date=vaccines.get(name='IPV/OPV #2').date + relativedelta(weeks=4))
+            #Japanese Encephalitis B
+            if vaccines.get(name='Japanese Encephalitis B #1').date is not None:
+                vaccines.filter(name='Japanese Encephalitis B #2').update(due_date=vaccines.get(name='Japanese Encephalitis B #2').date + relativedelta(months=24))
+            #MMR
+            if vaccines.get(name='MMR #1').date is not None:
+                vaccines.filter(name='MMR #2').update(due_date=vaccines.get(name='MMR #1').date + relativedelta(weeks=4))
+            #PCV
+            if vaccines.get(name='PCV #1').date is not None:
+                vaccines.filter(name='PCV #2').update(due_date=vaccines.get(name='PCV #1').date + relativedelta(weeks=4))
+            if vaccines.get(name='PCV #2').date is not None:
+                vaccines.filter(name='PCV #3').update(due_date=vaccines.get(name='PCV #2').date + relativedelta(weeks=4))
+            if vaccines.get(name='PCV #3').date is not None:
+                vaccines.filter(name='PCV Booster #1').update(due_date=vaccines.get(name='PCV #3').date + relativedelta(months=6))
+            #Rotavirus
+            if vaccines.get(name='Rotavirus #1').date is not None:
+                vaccines.filter(name='Rotavirus #2').update(due_date=vaccines.get(name='Rotavirus #1').date + relativedelta(weeks=4))
+            if vaccines.get(name='Rotavirus #2').date is not None:
+                vaccines.filter(name='Rotavirus #3').update(due_date=vaccines.get(name='Rotavirus #2').date + relativedelta(weeks=4))
+            #Typhoid
+            if vaccines.get(name='Typhoid').date is not None:
+                vaccines.filter(name='Typhoid').update(due_date=vaccines.get(name='Typhoid').date + relativedelta(years=3))
+            #Varicella
+            if vaccines.get(name='Varicella #1').date is not None:
+                vaccines.filter(name='Varicella #2').update(due_date=vaccines.get(name='Varicella #1').date + relativedelta(months=3))
+
             messages.success(request, 'Vaccine saved!')
         else:
             messages.error(request, formset.errors)
@@ -621,136 +678,136 @@ def report(request):
 
     #BCG
     bcg = Vaccine.objects.filter(name__contains='BCG')
-    confirmed_bcg = appt.filter(patient__in=bcg.values('patient'), date__in=bcg.values('date'), status='Confirmed').count()
-    unconfirmed_bcg = appt.filter(patient__in=bcg.values('patient'), date__in=bcg.values('date'), 
+    confirmed_bcg = appt.filter(patient__in=bcg.values('patient'), date__in=bcg.values('due_date'), status='Confirmed').count()
+    unconfirmed_bcg = appt.filter(patient__in=bcg.values('patient'), date__in=bcg.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_bcg = bcg.count()
     bcg_no_appt = total_bcg - (confirmed_bcg + unconfirmed_bcg)
 
     #Hepatitis B
     hb = Vaccine.objects.filter(name__contains='Hepatitis B')
-    confirmed_hb = appt.filter(patient__in=hb.values('patient'), date__in=hb.values('date'), status='Confirmed').count()
-    unconfirmed_hb = appt.filter(patient__in=hb.values('patient'), date__in=hb.values('date'), 
+    confirmed_hb = appt.filter(patient__in=hb.values('patient'), date__in=hb.values('due_date'), status='Confirmed').count()
+    unconfirmed_hb = appt.filter(patient__in=hb.values('patient'), date__in=hb.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_hb = hb.count()
     hb_no_appt = total_hb - (confirmed_hb + unconfirmed_hb)
 
     #DTaP/DTwP
     dtap = Vaccine.objects.filter(name__contains='DTaP/DTwP')
-    confirmed_dtap = appt.filter(patient__in=dtap.values('patient'), date__in=dtap.values('date'), status='Confirmed').count()
-    unconfirmed_dtap = appt.filter(patient__in=dtap.values('patient'), date__in=dtap.values('date'), 
+    confirmed_dtap = appt.filter(patient__in=dtap.values('patient'), date__in=dtap.values('due_date'), status='Confirmed').count()
+    unconfirmed_dtap = appt.filter(patient__in=dtap.values('patient'), date__in=dtap.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_dtap = dtap.count()
     dtap_no_appt = total_dtap - (confirmed_dtap + unconfirmed_dtap)
 
     #IPV/OPV
     ipv = Vaccine.objects.filter(name__contains='IPV/OPV')
-    confirmed_ipv = appt.filter(patient__in=ipv.values('patient'), date__in=ipv.values('date'), status='Confirmed').count()
-    unconfirmed_ipv = appt.filter(patient__in=ipv.values('patient'), date__in=ipv.values('date'), 
+    confirmed_ipv = appt.filter(patient__in=ipv.values('patient'), date__in=ipv.values('due_date'), status='Confirmed').count()
+    unconfirmed_ipv = appt.filter(patient__in=ipv.values('patient'), date__in=ipv.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_ipv = ipv.count()
     ipv_no_appt = total_ipv - (confirmed_ipv + unconfirmed_ipv)
 
     #HiB
     hib = Vaccine.objects.filter(name__contains='HiB')
-    confirmed_hib = appt.filter(patient__in=hib.values('patient'), date__in=hib.values('date'), status='Confirmed').count()
-    unconfirmed_hib = appt.filter(patient__in=hib.values('patient'), date__in=hib.values('date'), 
+    confirmed_hib = appt.filter(patient__in=hib.values('patient'), date__in=hib.values('due_date'), status='Confirmed').count()
+    unconfirmed_hib = appt.filter(patient__in=hib.values('patient'), date__in=hib.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_hib = hib.count()
     hib_no_appt = total_hib - (confirmed_hib + unconfirmed_hib)
 
     #PCV
     pcv = Vaccine.objects.filter(name__contains='PCV')
-    confirmed_pcv = appt.filter(patient__in=pcv.values('patient'), date__in=pcv.values('date'), status='Confirmed').count()
-    unconfirmed_pcv = appt.filter(patient__in=pcv.values('patient'), date__in=pcv.values('date'), 
+    confirmed_pcv = appt.filter(patient__in=pcv.values('patient'), date__in=pcv.values('due_date'), status='Confirmed').count()
+    unconfirmed_pcv = appt.filter(patient__in=pcv.values('patient'), date__in=pcv.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_pcv = pcv.count()
     pcv_no_appt = total_pcv - (confirmed_pcv + unconfirmed_pcv)
 
     #Rotavirus
     rv = Vaccine.objects.filter(name__contains='Rotavirus')
-    confirmed_rv = appt.filter(patient__in=rv.values('patient'), date__in=rv.values('date'), status='Confirmed').count()
-    unconfirmed_rv = appt.filter(patient__in=rv.values('patient'), date__in=rv.values('date'), 
+    confirmed_rv = appt.filter(patient__in=rv.values('patient'), date__in=rv.values('due_date'), status='Confirmed').count()
+    unconfirmed_rv = appt.filter(patient__in=rv.values('patient'), date__in=rv.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_rv = rv.count()
     rv_no_appt = total_rv - (confirmed_rv + unconfirmed_rv)
 
     #Measles
     msls = Vaccine.objects.filter(name__contains='Measles')
-    confirmed_msls = appt.filter(patient__in=msls.values('patient'), date__in=msls.values('date'), status='Confirmed').count()
-    unconfirmed_msls = appt.filter(patient__in=msls.values('patient'), date__in=msls.values('date'), 
+    confirmed_msls = appt.filter(patient__in=msls.values('patient'), date__in=msls.values('due_date'), status='Confirmed').count()
+    unconfirmed_msls = appt.filter(patient__in=msls.values('patient'), date__in=msls.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_msls = msls.count()
     msls_no_appt = total_msls - (confirmed_msls + unconfirmed_msls)
 
     #MMR
     mmr = Vaccine.objects.filter(name__contains='MMR')
-    confirmed_mmr = appt.filter(patient__in=mmr.values('patient'), date__in=mmr.values('date'), status='Confirmed').count()
-    unconfirmed_mmr = appt.filter(patient__in=mmr.values('patient'), date__in=mmr.values('date'), 
+    confirmed_mmr = appt.filter(patient__in=mmr.values('patient'), date__in=mmr.values('due_date'), status='Confirmed').count()
+    unconfirmed_mmr = appt.filter(patient__in=mmr.values('patient'), date__in=mmr.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_mmr = mmr.count()
     mmr_no_appt = total_mmr - (confirmed_mmr + unconfirmed_mmr)
 
     #Varicella
     vrcl = Vaccine.objects.filter(name__contains='Varicella')
-    confirmed_vrcl = appt.filter(patient__in=vrcl.values('patient'), date__in=vrcl.values('date'), status='Confirmed').count()
-    unconfirmed_vrcl = appt.filter(patient__in=vrcl.values('patient'), date__in=vrcl.values('date'), 
+    confirmed_vrcl = appt.filter(patient__in=vrcl.values('patient'), date__in=vrcl.values('due_date'), status='Confirmed').count()
+    unconfirmed_vrcl = appt.filter(patient__in=vrcl.values('patient'), date__in=vrcl.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_vrcl = vrcl.count()
     vrcl_no_appt = total_vrcl - (confirmed_vrcl + unconfirmed_vrcl)
 
     #Influenza
     flu = Vaccine.objects.filter(name__contains='Influenza')
-    confirmed_flu = appt.filter(patient__in=flu.values('patient'), date__in=flu.values('date'), status='Confirmed').count()
-    unconfirmed_flu = appt.filter(patient__in=flu.values('patient'), date__in=flu.values('date'), 
+    confirmed_flu = appt.filter(patient__in=flu.values('patient'), date__in=flu.values('due_date'), status='Confirmed').count()
+    unconfirmed_flu = appt.filter(patient__in=flu.values('patient'), date__in=flu.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_flu = flu.count()
     flu_no_appt = total_flu - (confirmed_flu + unconfirmed_flu)
 
     #Jap Encephalitis B
     jeb = Vaccine.objects.filter(name__contains='Japanese Encephalitis B')
-    confirmed_jeb = appt.filter(patient__in=jeb.values('patient'), date__in=jeb.values('date'), status='Confirmed').count()
-    unconfirmed_jeb = appt.filter(patient__in=jeb.values('patient'), date__in=jeb.values('date'), 
+    confirmed_jeb = appt.filter(patient__in=jeb.values('patient'), date__in=jeb.values('due_date'), status='Confirmed').count()
+    unconfirmed_jeb = appt.filter(patient__in=jeb.values('patient'), date__in=jeb.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_jeb = jeb.count()
     jeb_no_appt = total_jeb - (confirmed_jeb + unconfirmed_jeb)
 
     #Hepatitis A
     ha = Vaccine.objects.filter(name__contains='Hepatitis A')
-    confirmed_ha = appt.filter(patient__in=ha.values('patient'), date__in=ha.values('date'), status='Confirmed').count()
-    unconfirmed_ha = appt.filter(patient__in=ha.values('patient'), date__in=ha.values('date'), 
+    confirmed_ha = appt.filter(patient__in=ha.values('patient'), date__in=ha.values('due_date'), status='Confirmed').count()
+    unconfirmed_ha = appt.filter(patient__in=ha.values('patient'), date__in=ha.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_ha = ha.count()
     ha_no_appt = total_ha - (confirmed_ha + unconfirmed_ha)
 
     #Meningococcal
     mng = Vaccine.objects.filter(name__contains='Meninggococcal')
-    confirmed_mng = appt.filter(patient__in=mng.values('patient'), date__in=mng.values('date'), status='Confirmed').count()
-    unconfirmed_mng = appt.filter(patient__in=mng.values('patient'), date__in=mng.values('date'), 
+    confirmed_mng = appt.filter(patient__in=mng.values('patient'), date__in=mng.values('due_date'), status='Confirmed').count()
+    unconfirmed_mng = appt.filter(patient__in=mng.values('patient'), date__in=mng.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_mng = mng.count()
     mng_no_appt = total_mng - (confirmed_mng + unconfirmed_mng)
 
     #Typhoid
     typ = Vaccine.objects.filter(name__contains='Typhoid')
-    confirmed_typ = appt.filter(patient__in=typ.values('patient'), date__in=typ.values('date'), status='Confirmed').count()
-    unconfirmed_typ = appt.filter(patient__in=typ.values('patient'), date__in=typ.values('date'), 
+    confirmed_typ = appt.filter(patient__in=typ.values('patient'), date__in=typ.values('due_date'), status='Confirmed').count()
+    unconfirmed_typ = appt.filter(patient__in=typ.values('patient'), date__in=typ.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_typ = typ.count()
     typ_no_appt = total_typ - (confirmed_typ + unconfirmed_typ)
 
     #Td/Tdap
     td = Vaccine.objects.filter(name__contains='Td/Tdap')
-    confirmed_td = appt.filter(patient__in=td.values('patient'), date__in=td.values('date'), status='Confirmed').count()
-    unconfirmed_td = appt.filter(patient__in=td.values('patient'), date__in=td.values('date'), 
+    confirmed_td = appt.filter(patient__in=td.values('patient'), date__in=td.values('due_date'), status='Confirmed').count()
+    unconfirmed_td = appt.filter(patient__in=td.values('patient'), date__in=td.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_td = td.count()
     td_no_appt = total_td - (confirmed_td + unconfirmed_td)
 
     #HPV
     hpv = Vaccine.objects.filter(name__contains='HPV')
-    confirmed_hpv = appt.filter(patient__in=hpv.values('patient'), date__in=hpv.values('date'), status='Confirmed').count()
-    unconfirmed_hpv = appt.filter(patient__in=hpv.values('patient'), date__in=hpv.values('date'), 
+    confirmed_hpv = appt.filter(patient__in=hpv.values('patient'), date__in=hpv.values('due_date'), status='Confirmed').count()
+    unconfirmed_hpv = appt.filter(patient__in=hpv.values('patient'), date__in=hpv.values('due_date'), 
                                                 status__in=['Blank', 'Cancelled', 'Rescheduled', 'Requested']).count()
     total_hpv = hpv.count()
     hpv_no_appt = total_hpv - (confirmed_hpv + unconfirmed_hpv)
@@ -820,7 +877,7 @@ def dueVax(request):
     vax_filter = dueVaxForm(request.POST or None)
     if request.method == 'POST':
         due_vaccine_patients = due_vaccine_patients.filter(
-            date__range = [
+            due_date__range = [
                 vax_filter['date_start'].value(),
                 vax_filter['date_end'].value()
             ]
@@ -837,37 +894,23 @@ def dueVax(request):
 def dueVaxEmail(request, pk):
     vaccine = Vaccine.objects.get(id=pk)
     email = vaccine.patient.email
-    appointment_form = AppointmentForm(initial={
-        'patient': vaccine.patient, 'doctor': vaccine.patient.attending_doctor
-        })
 
     if(request.method == "POST"):
-        if 'email' in request.POST:
-            htmly = get_template('tracker/dueVaxEmailTemplate.html')
-            d = {
-                'vaccine': vaccine,
-            }
-            subject, from_email, to = 'BAQNA - Reminder for Due Vaccination w/o Appointment', 'your_email@gmail.com', email
-            html_content = htmly.render(d)
-            msg = EmailMultiAlternatives(
-                subject, html_content, from_email, [to])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
-            messages.success(request, 'Email Reminder Sent!')
-            return redirect('/dueVax/')
-
-        elif 'appt' in request.POST:
-            appointment_form = AppointmentForm(request.POST)
-            if appointment_form.is_valid():
-                appointment_form.save()
-                messages.success(request, 'Appointment scheduled!')
-            else:
-                messages.error(request, appointment_form.errors)
-            return redirect('/dueVaxEmail/' + pk)
+        htmly = get_template('tracker/dueVaxEmailTemplate.html')
+        d = {
+            'vaccine': vaccine,
+        }
+        subject, from_email, to = 'BAQNA - Reminder for Due Vaccination w/o Appointment', 'your_email@gmail.com', email
+        html_content = htmly.render(d)
+        msg = EmailMultiAlternatives(
+            subject, html_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        messages.success(request, 'Email Reminder Sent!')
+        return redirect('/dueVax/')
 
     data = {
-        'vaccine': vaccine,
-        'appointment_form': appointment_form,
+        'vaccine': vaccine
     }
     return render(request, 'tracker/dueVaxEmail.html', data)
 

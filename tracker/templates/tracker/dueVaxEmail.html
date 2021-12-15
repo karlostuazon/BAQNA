@@ -47,29 +47,6 @@
         </div>
 
         <div class="col-lg" style="background-color: white; padding-top: 3%;">
-
-          {% if messages %}
-              {% for message in messages %}
-                {% if message.tags == 'success' %}
-                  <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle"></i>
-                    <div class="message">
-                      &nbsp;{{ message }}
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                  </div>
-                {% elif message.tags == 'error' %}
-                  <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
-                    <i class="fas fa-times-circle"></i>
-                    <div class="message">
-                      &nbsp;{{ message }}
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                  </div>  
-                {% endif %}
-              {% endfor %}  
-            {% endif %}
-
           <h3>Send Email Reminder For:</h3>
           <table id="rows" class="table table-primary table-bordered border-dark" style="margin-top: 3%;">
             <thead>
@@ -92,50 +69,8 @@
             {% csrf_token %}
             <label>Email of Patient:</label>
             <input id="email" style="width:30%;" type="text" class="form-control" value="{{vaccine.patient.email}}" readonly>
-            <button style="margin-top:1%;" name="email" type="submit" class="btn btn-success">Send</button>
+            <button style="margin-top:1%;" type="submit" class="btn btn-success">Send</button>
             <a href="{% url 'dueVax' %}" style="margin-top:1%;" class="btn btn-danger">Cancel</a>
-          </form>
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#schedule" style="margin-top: 1%;">
-            Schedule Appointment
-          </button>
-
-
-          <form action="" method="post">
-            {% csrf_token %}
-            <div class="modal fade" id="schedule" tabindex="-1" aria-labelledby="Schedule Appointment" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Schedule an appointment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    {{appointment_form.patient}}
-                    <label for="status">Status</label>
-                    {{appointment_form.status}}
-                    <label for="date">Date</label>
-                    <div class="input-group date" id="datetimepicker" data-target-input="nearest">
-                      {{appointment_form.date}}
-                      <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
-                      </div>
-                    </div>
-                    <label for="time">Time</label>
-                    {{appointment_form.time}}
-                    <label for="doctor">Doctor</label>
-                    {{appointment_form.doctor}}
-                    <label for="visit">Visit</label>
-                    {{appointment_form.visit}}
-                    <label for="location">Location</label>
-                    {{appointment_form.location}}          
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" name="appt" class="btn btn-success">Schedule</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </form>
           
         </div>

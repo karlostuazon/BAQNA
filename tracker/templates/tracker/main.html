@@ -104,14 +104,14 @@
       {% if request.user|has_group:'Patient User' %}
         <a href="{% url 'homePatient' %}" class="navbar-brand">
           <div class="logo-image">
-            <img src="https://i.ibb.co/drT8m1M/logo.jpg" class="img-fluid">
+            <img src="{% static 'images/logo.jpg' %}" class="img-fluid">
           </div> 
         </a>
         <a href="{% url 'homePatient' %}"><h2 style="float: left; color: #FAFAFA;">BaQna</h2></a>
       {% else %}
         <a href="{% url 'home' %}" class="navbar-brand">
           <div class="logo-image">
-            <img src="https://i.ibb.co/drT8m1M/logo.jpg" class="img-fluid">
+            <img src="{% static 'images/logo.jpg' %}" class="img-fluid">
           </div> 
         </a>
         <a href="{% url 'home' %}"><h2 style="float: left; color: #FAFAFA;">BaQna</h2></a>

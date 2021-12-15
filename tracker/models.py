@@ -147,6 +147,7 @@ class Vaccine(models.Model):
     dose = models.CharField(max_length=50, null=True, choices=DOSE)
     brand = models.CharField(max_length=50, null=True, blank=True)
     date = models.DateField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=50, null=True, blank=True, choices=LOCATION)
     remarks = models.CharField(max_length=50, null=True, blank=True)
 

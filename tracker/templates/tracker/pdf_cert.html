@@ -34,7 +34,7 @@
 
     <body>
         <div class="wrapper">
-            <!-- <img src="{% static 'images/vax-cert-logo.png' %}" alt="logo" style=""> -->
+            <img src="{% static 'images/vax-cert-logo.png' %}" alt="logo">
             <h1>CHILDCARE PEDIATRICIANS</h1>
             <hr>
             <h4>{{curr_date}}</h4>
@@ -42,7 +42,7 @@
             
             <p>
                 This is to certify that <b>{{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</b>,
-                <b>{{age}}, {{patient.sex}}</b>, of <b>{{patient.city}}</b> has completed the following 
+                <b>{{age}}, {% if patient.sex == "M" %}Male{% else %}Female{% endif %}</b>, of <b>{{patient.city}} City</b> has completed the following 
                 vaccinations: <br>
 
                 <div class="vaccine-table">

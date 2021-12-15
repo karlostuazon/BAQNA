@@ -81,7 +81,6 @@
                   {{doc_user_form.doc_type}}
 
                   {% if request.user == physician.user %}
-                  <s hidden>{{doc_user_form.can_reg}}</s>
                   {% else %}
                   <label class="can-reg-label">Can Register?</label>
                   {{doc_user_form.can_reg}}

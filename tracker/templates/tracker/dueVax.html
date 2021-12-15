@@ -80,21 +80,26 @@
           {% endif %}
 
 
-
-          <form method="post" style="width: 20%;">
+          <form method="post" style="width: fit-content;">
             {% csrf_token %}
-            <label for="datetimepicker1">Date start</label>
-            <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-              {{vax_filter.date_start}}
-              <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
+            <div class="row">
+              <div class="col">
+                <label for="datetimepicker1">Date start</label>
+                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                  {{vax_filter.date_start}}
+                  <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <label for="datetimepicker2">Date end</label>
-            <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-              {{vax_filter.date_end}}
-              <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
+              <div class="col">
+                <label for="datetimepicker2">Date end</label>
+                <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                  {{vax_filter.date_end}}
+                  <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar" style="height: 24px;"></i></div>
+                  </div>
+                </div>
               </div>
             </div>
             <button type="submit" style="width: 50%;" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
@@ -107,6 +112,7 @@
               <th>Last Name</th>
               <th>Nickname</th>
               <th>Contact</th>
+              <th>Due Date</th>
             </thead>
             {% for instance in vaccines %}
             <tbody>
@@ -116,15 +122,13 @@
                 <td>{{instance.patient.last_name}}</td>
                 <td>{{instance.patient.nick_name}}</td>
                 <td>{{instance.patient.cell_no}}</td>
+                <td>{{instance.due_date}}</td>
               </tr>
             </tbody>
             {% empty %}
             <tr><td colspan="7" style="color: red;"><h6>No records found.</h6></td></tr>
             {% endfor %}
           </table>
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sched" style="margin-top: 2%;">
-            Schedule Appointment
-          </button>
           {% endif %}
         </div>
     </div>

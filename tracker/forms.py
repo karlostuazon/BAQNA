@@ -236,6 +236,7 @@ class VaccineForm(ModelForm):
             'location': Select(attrs={'class':'form-control', 'placeholder': 'Location'}),
             'brand': TextInput(attrs={'class': 'form-control', 'placeholder': 'Brand'}),
             'remarks': TextInput(attrs={'class': 'form-control', 'placeholder': 'Remarks'}),
+            'due_date': HiddenInput(attrs={'type': 'hidden'}),
         }
 
 class StaffCreateForm(UserCreationForm):
