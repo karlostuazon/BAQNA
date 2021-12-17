@@ -12,9 +12,11 @@
             <li class="nav-item" style="margin-right: 20px">
               <h2>{{patient.last_name}}</h2>
             </li>
+            {% if patient.nick_name %}
             <li class="nav-item" style="margin-right: 20px">
               <i><h5 style="margin-top: 10px;">({{patient.nick_name}})</h5></i>
             </li>
+            {% endif %}
             <li class="nav-item" style="margin-right: 20px">
               <i><h5 style="margin-top:10px;">{{age}}</h5></i>
             </li>

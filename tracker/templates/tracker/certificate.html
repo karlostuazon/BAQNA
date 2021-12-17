@@ -35,7 +35,7 @@
 
             <div class="certificate-text">
                 <p style="border-style: solid; padding: 1%; padding-bottom: 5%; font-size: 18px; color: black; width: max-content   ;">
-                    This is to certify that <b>{{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</b>,
+                    This is to certify that <b>{{patient.first_name}} {% if patient.middle_name %} {{patient.middle_name}} {%endif%} {{patient.last_name}}</b>,
                     <b>{{age}}, {{patient.sex}}</b>, of <b>{{patient.city}}</b> has completed the following 
                     vaccinations. <br><br> This certificate is being issued upon the request of the above-mentioned for
                     whatever purpose it may serve, except those of a medico-legal-nature.<br><br>
