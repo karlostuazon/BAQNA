@@ -82,7 +82,7 @@ def password_reset(request):
                         'username': user,
                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                         'token': default_token_generator.make_token(user),
-                        'domain': '127.0.0.1:8000',
+                        'domain': 'baqna.herokuapp.com',
                         'protocol': 'http',
                         }
                     subject, from_email, to = 'BAQNA - Password Reset Form', 'your_email@gmail.com', email
